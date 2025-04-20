@@ -12,6 +12,8 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,6 +26,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -34,6 +37,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Settings
@@ -74,6 +79,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -1444,8 +1450,53 @@ class MainActivity : ComponentActivity() {
                                         )
                                     }
                                     Spacer(modifier = Modifier.height(5.dp))
+                                    var isExpand by remember { mutableStateOf(true) }
+                                    fun getExpand():String {
+                                        return if (isExpand) {
+                                            "Collapse Example Image"
+                                        } else {
+                                            "Expand Example Image"
+                                        }
+                                    }
+                                    fun getExpandIcon(): ImageVector {
+                                        return if (isExpand) {
+                                            Icons.Default.KeyboardArrowUp
+                                        } else {
+                                            Icons.Default.KeyboardArrowDown
+                                        }
+                                    }
+                                    Box (modifier = Modifier.padding(horizontal = 8.dp).clickable { isExpand = !isExpand }.background(MaterialTheme.colorScheme.tertiaryContainer).shadow(1.dp, RoundedCornerShape(4.dp)).fillMaxWidth()) {
+                                        Text(
+                                            getExpand(),
+                                            color = MaterialTheme.colorScheme.onTertiaryContainer,
+                                            fontSize = 15.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            modifier = Modifier.align(Alignment.CenterStart)
+                                        )
+                                        Icon(
+                                            getExpandIcon(),
+                                            contentDescription = "Expand / Collapse",
+                                            modifier = Modifier.align(Alignment.CenterEnd)
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.height(2.dp))
+                                    HorizontalDivider()
+                                    Spacer(modifier = Modifier.height(2.dp))
+                                    AnimatedVisibility(isExpand) {
+                                        Image(
+                                            painter = painterResource(id = R.drawable.side_sqr),
+                                            contentDescription = "Example Image",
+                                            modifier = Modifier.padding(horizontal = 8.dp).size(400.dp)
+                                        )
+                                        Spacer(modifier = Modifier.height(2.dp))
+                                        Text(
+                                            "The All Side Of Square are Equal",
+                                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                            fontSize = 15.sp,
+                                            fontWeight = FontWeight.SemiBold
+                                        )
+                                    }
                                 }
-
                             }
                         }
 
