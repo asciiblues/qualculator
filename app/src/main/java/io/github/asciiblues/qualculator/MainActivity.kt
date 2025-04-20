@@ -2052,8 +2052,8 @@ class MainActivity : ComponentActivity() {
                                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
                                         )
 
-                                        val fromList = listOf("mm", "cm", "m", "km")
-                                        val toList = listOf("mm", "cm", "m", "km")
+                                        val fromList = listOf("mm", "cm", "in", "ft","m", "km")
+                                        val toList = listOf("mm", "cm", "in","ft","m", "km")
                                         var isFrom by remember { mutableStateOf(false) }
                                         var isTo by remember { mutableStateOf(false) }
                                         var fromListOptn by remember { mutableStateOf(fromList[0]) }
@@ -2160,6 +2160,14 @@ class MainActivity : ComponentActivity() {
                                                         "Centimetre"
                                                     }
 
+                                                    "in" -> {
+                                                        "Inch"
+                                                    }
+
+                                                    "ft" -> {
+                                                        "Feet"
+                                                    }
+
                                                     "m" -> {
                                                         "Meter"
                                                     }
@@ -2211,84 +2219,71 @@ class MainActivity : ComponentActivity() {
                                         when (fromListOptn) {
                                             "mm" -> {
                                                 toUnit = when (toListOptn) {
-                                                    "cm" -> {
-                                                        fromUnit / 10
-                                                    }
-
-                                                    "m" -> {
-                                                        fromUnit / 1000
-                                                    }
-
-                                                    "km" -> {
-                                                        fromUnit / 1000000
-                                                    }
-
-                                                    else -> {
-                                                        fromUnit
-                                                    }
+                                                    "cm" -> fromUnit / 10
+                                                    "in" -> fromUnit / 25.4
+                                                    "ft" -> fromUnit / 304.8
+                                                    "m" -> fromUnit / 1000
+                                                    "km" -> fromUnit / 1_000_000
+                                                    else -> fromUnit
                                                 }
                                             }
 
                                             "cm" -> {
                                                 toUnit = when (toListOptn) {
-                                                    "mm" -> {
-                                                        fromUnit * 10
-                                                    }
-
-                                                    "m" -> {
-                                                        fromUnit / 100
-                                                    }
-
-                                                    "km" -> {
-                                                        fromUnit / 100000
-                                                    }
-
-                                                    else -> {
-                                                        fromUnit
-                                                    }
+                                                    "mm" -> fromUnit * 10
+                                                    "in" -> fromUnit / 2.54
+                                                    "ft" -> fromUnit / 30.48
+                                                    "m" -> fromUnit / 100
+                                                    "km" -> fromUnit / 100_000
+                                                    else -> fromUnit
                                                 }
                                             }
 
                                             "m" -> {
                                                 toUnit = when (toListOptn) {
-                                                    "mm" -> {
-                                                        fromUnit * 1000
-                                                    }
-
-                                                    "cm" -> {
-                                                        fromUnit * 100
-                                                    }
-
-                                                    "km" -> {
-                                                        fromUnit / 1000
-                                                    }
-
-                                                    else -> {
-                                                        fromUnit
-                                                    }
+                                                    "mm" -> fromUnit * 1000
+                                                    "cm" -> fromUnit * 100
+                                                    "in" -> fromUnit * 39.3701
+                                                    "ft" -> fromUnit * 3.28084
+                                                    "km" -> fromUnit / 1000
+                                                    else -> fromUnit
                                                 }
                                             }
 
                                             "km" -> {
                                                 toUnit = when (toListOptn) {
-                                                    "mm" -> {
-                                                        fromUnit * 1000000
-                                                    }
+                                                    "mm" -> fromUnit * 1_000_000
+                                                    "cm" -> fromUnit * 100_000
+                                                    "in" -> fromUnit * 39_370.1
+                                                    "ft" -> fromUnit * 3_280.84
+                                                    "m" -> fromUnit * 1000
+                                                    else -> fromUnit
+                                                }
+                                            }
 
-                                                    "cm" -> {
-                                                        fromUnit * 100000
-                                                    }
+                                            "in" -> {
+                                                toUnit = when (toListOptn) {
+                                                    "mm" -> fromUnit * 25.4
+                                                    "cm" -> fromUnit * 2.54
+                                                    "ft" -> fromUnit / 12
+                                                    "m" -> fromUnit / 39.3701
+                                                    "km" -> fromUnit / 39_370.1
+                                                    else -> fromUnit
+                                                }
+                                            }
 
-                                                    "m" -> {
-                                                        fromUnit * 1000
-                                                    }
-
-                                                    else -> {
-                                                        fromUnit
-                                                    }
+                                            "ft" -> {
+                                                toUnit = when (toListOptn) {
+                                                    "mm" -> fromUnit * 304.8
+                                                    "cm" -> fromUnit * 30.48
+                                                    "in" -> fromUnit * 12
+                                                    "m" -> fromUnit / 3.28084
+                                                    "km" -> fromUnit / 3_280.84
+                                                    else -> fromUnit
                                                 }
                                             }
                                         }
+
 
                                         Spacer(modifier = Modifier.height(5.dp))
 
