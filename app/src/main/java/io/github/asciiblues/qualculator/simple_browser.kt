@@ -92,7 +92,6 @@ class simple_browser : ComponentActivity() {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Spacer(modifier = Modifier.height(8.dp))
                 AndroidView(
                     factory = {
                         WebView(it).apply {
@@ -102,7 +101,7 @@ class simple_browser : ComponentActivity() {
                             webView = this
                         }
                     },
-                    modifier = Modifier.padding(1.dp).fillMaxSize()
+                    modifier = Modifier.padding(top = 8.dp, bottom = 1.dp, start = 1.dp, end = 1.dp).fillMaxSize()
                 )
             }
             if (isClose.value) {
