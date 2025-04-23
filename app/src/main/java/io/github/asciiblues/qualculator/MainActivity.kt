@@ -1,8 +1,6 @@
 package io.github.asciiblues.qualculator
 
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
@@ -32,8 +30,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -80,17 +76,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -123,7 +113,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             QualculatorTheme {
                 val scope = rememberCoroutineScope()
-                val currentScreen = rememberSaveable { mutableIntStateOf(0) } // 0 = Home, 1 = Converter, 2 = Settings, other for claer
+                val currentScreen =
+                    rememberSaveable { mutableIntStateOf(0) } // 0 = Home, 1 = Converter, 2 = Settings, other for claer
                 val snackbarHostState = remember { SnackbarHostState() }
                 setStatusBarColor()
                 Scaffold(
@@ -237,8 +228,7 @@ class MainActivity : ComponentActivity() {
         snackbarHostState: SnackbarHostState = SnackbarHostState(),
         scope: CoroutineScope = CoroutineScope(
             Dispatchers.Main
-        ) /* Default for Preview */
-        ,
+        ) /* Default for Preview */,
         currentScreen: MutableState<Int> = mutableStateOf(0)
     ) {
 
@@ -257,6 +247,7 @@ class MainActivity : ComponentActivity() {
                             isClearAll = false
                             currentScreen.value = 0
                         }
+
                         1 -> {
                             currentScreen.value = 5 // it is for clear
                             delay(60)
@@ -298,1643 +289,1663 @@ class MainActivity : ComponentActivity() {
             val vibrator = context.getSystemService(VIBRATOR_SERVICE) as Vibrator
             when (currentScreen.value) {
                 0 -> {
-                        readVibrt()
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(MaterialTheme.colorScheme.background)
-                                .padding(5.dp)
-                                .imePadding()
-                                .verticalScroll(scrollState),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
+                    readVibrt()
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(MaterialTheme.colorScheme.background)
+                            .padding(5.dp)
+                            .imePadding()
+                            .verticalScroll(scrollState),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
 
-                            val calcType = listOf(
-                                " < < Select Calculator Type > >",
-                                "Simple Interest Calculator",
-                                "Principle Amount Calculator",
-                                "Rate of Interest Calculator",
-                                "Time of Interest Calculator",
-                                "Average Calculator",
-                                "Square Area Calculator",
-                                "Rectangle Area Calculator",
-                                "Circle Area Calculator",
-                                "Cube Volume Calculator",
-                                "Cuboid Volume Calculator",
-                                "Cylinder Volume Calculator"
+                        val calcType = listOf(
+                            " < < Select Calculator Type > >",
+                            "Simple Interest Calculator",
+                            "Principle Amount Calculator",
+                            "Rate of Interest Calculator",
+                            "Time of Interest Calculator",
+                            "Average Calculator",
+                            "Square Area Calculator",
+                            "Rectangle Area Calculator",
+                            "Circle Area Calculator",
+                            "Cube Volume Calculator",
+                            "Cuboid Volume Calculator",
+                            "Cylinder Volume Calculator"
+                        )
+
+                        var isCalcTypeExpanded by remember { mutableStateOf(false) }
+                        var selectedCalcType by remember { mutableStateOf(calcType[0]) }
+
+                        Spacer(modifier = Modifier.height(15.dp))
+
+                        ExposedDropdownMenuBox(
+                            expanded = isCalcTypeExpanded,
+                            onExpandedChange = { isCalcTypeExpanded = !isCalcTypeExpanded }
+                        ) {
+                            TextField(
+                                value = selectedCalcType,
+                                onValueChange = {},
+                                readOnly = true,
+                                label = { Text("Calculator Type") },
+                                trailingIcon = {
+                                    ExposedDropdownMenuDefaults.TrailingIcon(
+                                        expanded = isCalcTypeExpanded
+                                    )
+                                },
+                                modifier = Modifier
+                                    .menuAnchor()
+                                    .padding(horizontal = 6.dp)
+                                    .fillMaxWidth(),
                             )
 
-                            var isCalcTypeExpanded by remember { mutableStateOf(false) }
-                            var selectedCalcType by remember { mutableStateOf(calcType[0]) }
-
-                            Spacer(modifier = Modifier.height(15.dp))
-
-                            ExposedDropdownMenuBox(
+                            ExposedDropdownMenu(
                                 expanded = isCalcTypeExpanded,
-                                onExpandedChange = { isCalcTypeExpanded = !isCalcTypeExpanded }
+                                onDismissRequest = { isCalcTypeExpanded = false }
                             ) {
-                                TextField(
-                                    value = selectedCalcType,
-                                    onValueChange = {},
-                                    readOnly = true,
-                                    label = { Text("Calculator Type") },
-                                    trailingIcon = {
-                                        ExposedDropdownMenuDefaults.TrailingIcon(
-                                            expanded = isCalcTypeExpanded
-                                        )
-                                    },
-                                    modifier = Modifier
-                                        .menuAnchor()
-                                        .padding(horizontal = 6.dp)
-                                        .fillMaxWidth(),
-                                )
-
-                                ExposedDropdownMenu(
-                                    expanded = isCalcTypeExpanded,
-                                    onDismissRequest = { isCalcTypeExpanded = false }
-                                ) {
-                                    calcType.forEach { selectionOption ->
-                                        DropdownMenuItem(
-                                            text = { Text(selectionOption) },
-                                            onClick = {
-                                                selectedCalcType = selectionOption
-                                                isCalcTypeExpanded = false
-                                            }
-                                        )
-                                    }
-                                }
-                            }
-
-                            Spacer(modifier = Modifier.height(15.dp))
-                            when (selectedCalcType) {
-                                "Simple Interest Calculator" -> {
-                                    Card {
-                                        val options = listOf("In Year", "In Month")
-                                        var selectedOptionText by remember { mutableStateOf(options[0]) }
-                                        val rOptions = listOf("Per Year", "Per Month")
-                                        var rSelectedOptionText by remember { mutableStateOf(rOptions[0]) }
-                                        var pText by remember { mutableStateOf("") }
-                                        var p = pText.toDoubleOrNull() ?: 0.0
-                                        var rText by remember { mutableStateOf("") }
-                                        var r = rText.toDoubleOrNull() ?: 0.0
-                                        var si by remember { mutableDoubleStateOf(0.00) }
-                                        var a by remember { mutableDoubleStateOf(0.00) }
-                                        var tText by remember { mutableStateOf("") }
-                                        var t = tText.toDoubleOrNull() ?: 0.0
-                                        Column(
-                                            modifier = Modifier
-                                                .padding(5.dp)
-                                                .fillMaxSize()
-                                                .background(MaterialTheme.colorScheme.primaryContainer),
-                                            horizontalAlignment = Alignment.CenterHorizontally
-                                        ) {
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            Text(
-                                                "Simple Interest Calculator",
-                                                fontSize = 20.sp,
-                                                fontWeight = FontWeight.Bold,
-                                                color = MaterialTheme.colorScheme.onPrimaryContainer
-                                            )
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            HorizontalDivider()
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            OutlinedTextField(
-                                                value = pText,
-                                                onValueChange = { pText = it },
-                                                label = { Text("Principal Amount") },
-                                                singleLine = true,
-                                                modifier = Modifier
-                                                    .padding(horizontal = 20.dp)
-                                                    .fillMaxWidth(),
-                                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-                                            )
-                                            Spacer(modifier = Modifier.height(10.dp))
-                                            Row(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .padding(2.dp)
-                                            ) {
-                                                OutlinedTextField(
-                                                    value = rText,
-                                                    onValueChange = { rText = it },
-                                                    label = { Text("Rate of Interest") },
-                                                    singleLine = true,
-                                                    modifier = Modifier
-                                                        .padding(horizontal = 4.dp)
-                                                        .width(180.dp),
-                                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-                                                )
-                                                Spacer(modifier = Modifier.width(10.dp))
-                                                var expanded by remember { mutableStateOf(false) }
-
-                                                ExposedDropdownMenuBox(
-                                                    expanded = expanded,
-                                                    onExpandedChange = { expanded = !expanded }
-                                                ) {
-                                                    OutlinedTextField(
-                                                        value = rSelectedOptionText,
-                                                        onValueChange = {},
-                                                        readOnly = true,
-                                                        label = { Text("Select Rate type") },
-                                                        trailingIcon = {
-                                                            ExposedDropdownMenuDefaults.TrailingIcon(
-                                                                expanded = expanded
-                                                            )
-                                                        },
-                                                        modifier = Modifier
-                                                            .menuAnchor()
-                                                            .fillMaxWidth()
-                                                    )
-
-                                                    ExposedDropdownMenu(
-                                                        expanded = expanded,
-                                                        onDismissRequest = { expanded = false }
-                                                    ) {
-                                                        rOptions.forEach { selectionOption ->
-                                                            DropdownMenuItem(
-                                                                text = { Text(selectionOption) },
-                                                                onClick = {
-                                                                    rSelectedOptionText = selectionOption
-                                                                    expanded = false
-                                                                }
-                                                            )
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                            Spacer(modifier = Modifier.height(10.dp))
-                                            Row(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .padding(2.dp)
-                                            ) {
-                                                OutlinedTextField(
-                                                    value = tText,
-                                                    onValueChange = { tText = it },
-                                                    label = { Text("Time") },
-                                                    singleLine = true,
-                                                    modifier = Modifier
-                                                        .padding(horizontal = 4.dp)
-                                                        .width(180.dp),
-                                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-                                                )
-                                                Spacer(modifier = Modifier.width(10.dp))
-                                                var expanded by remember { mutableStateOf(false) }
-
-                                                ExposedDropdownMenuBox(
-                                                    expanded = expanded,
-                                                    onExpandedChange = { expanded = !expanded }
-                                                ) {
-                                                    OutlinedTextField(
-                                                        value = selectedOptionText,
-                                                        onValueChange = {},
-                                                        readOnly = true,
-                                                        label = { Text("Select time type") },
-                                                        trailingIcon = {
-                                                            ExposedDropdownMenuDefaults.TrailingIcon(
-                                                                expanded = expanded
-                                                            )
-                                                        },
-                                                        modifier = Modifier
-                                                            .menuAnchor()
-                                                            .fillMaxWidth()
-                                                    )
-
-                                                    ExposedDropdownMenu(
-                                                        expanded = expanded,
-                                                        onDismissRequest = { expanded = false }
-                                                    ) {
-                                                        options.forEach { selectionOption ->
-                                                            DropdownMenuItem(
-                                                                text = { Text(selectionOption) },
-                                                                onClick = {
-                                                                    selectedOptionText = selectionOption
-                                                                    expanded = false
-                                                                }
-                                                            )
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                            Spacer(modifier = Modifier.height(10.dp))
-                                            Button(
-                                                onClick = {
-                                                    try {
-                                                        si = when {
-                                                            rSelectedOptionText == "Per Year" && selectedOptionText == "In Month" -> {
-                                                                (p * r * (t / 12.0)) / 100
-                                                            }
-
-                                                            rSelectedOptionText == "Per Month" && selectedOptionText == "In Year" -> {
-                                                                (p * r * (t * 12.0)) / 100
-                                                            }
-
-                                                            rSelectedOptionText == "Per Month" && selectedOptionText == "In Month" -> {
-                                                                (p * r * t) / 100
-                                                            }
-
-                                                            rSelectedOptionText == "Per Year" && selectedOptionText == "In Year" -> {
-                                                                (p * r * t) / 100
-                                                            }
-
-                                                            else -> 0.0 // fallback in case of invalid input
-                                                        }
-                                                        si =
-                                                            BigDecimal(si).setScale(4, RoundingMode.HALF_UP)
-                                                                .toDouble()
-                                                        a = p + si
-                                                        // vibart the phone
-                                                        if (isVibrt) {
-                                                            if (Build.VERSION.SDK_INT <= 26) {
-                                                                vibrator.vibrate(100)
-                                                            } else {
-                                                                vibrator.vibrate(
-                                                                    VibrationEffect.createOneShot(
-                                                                        100,
-                                                                        VibrationEffect.DEFAULT_AMPLITUDE
-                                                                    )
-                                                                )
-                                                            }
-                                                        }
-                                                    } catch (ex: Exception) {
-                                                        scope.launch {
-                                                            snackbarHostState.showSnackbar(
-                                                                "Error :- ${ex.message}",
-                                                                withDismissAction = true,
-                                                                duration = SnackbarDuration.Short
-                                                            )
-                                                        }
-                                                    }
-                                                },
-                                                modifier = Modifier
-                                                    .padding(horizontal = 8.dp)
-                                                    .fillMaxWidth()
-                                            ) {
-                                                Text("Calculate")
-                                            }
-                                            Spacer(modifier = Modifier.height(10.dp))
-                                            Column(
-                                                modifier = Modifier
-                                                    .padding(horizontal = 8.dp)
-                                                    .fillMaxWidth()
-                                                    .height(50.dp)
-                                                    .shadow(
-                                                        elevation = 1.dp,
-                                                        shape = RoundedCornerShape(10.dp)
-                                                    )
-                                                    .background(MaterialTheme.colorScheme.onSecondaryContainer),
-                                                verticalArrangement = Arrangement.Center,
-                                                horizontalAlignment = Alignment.CenterHorizontally
-                                            ) {
-                                                Text(
-                                                    "Simple Interest = $si",
-                                                    color = MaterialTheme.colorScheme.secondaryContainer,
-                                                    fontSize = 15.sp,
-                                                    fontWeight = FontWeight.SemiBold
-                                                )
-                                                Spacer(modifier = Modifier.height(5.dp))
-                                                Text(
-                                                    "Total Amount = $a",
-                                                    color = MaterialTheme.colorScheme.secondaryContainer,
-                                                    fontSize = 15.sp,
-                                                    fontWeight = FontWeight.SemiBold
-                                                )
-                                            }
-                                            Spacer(modifier = Modifier.height(5.dp))
+                                calcType.forEach { selectionOption ->
+                                    DropdownMenuItem(
+                                        text = { Text(selectionOption) },
+                                        onClick = {
+                                            selectedCalcType = selectionOption
+                                            isCalcTypeExpanded = false
                                         }
-                                    }
-                                }
-
-                                "Principle Amount Calculator" -> {
-                                    Card {
-                                        Column(
-                                            modifier = Modifier
-                                                .padding(5.dp)
-                                                .fillMaxWidth()
-                                                .background(MaterialTheme.colorScheme.primaryContainer),
-                                            horizontalAlignment = Alignment.CenterHorizontally
-                                        ) {
-                                            var iText by remember { mutableStateOf("") }
-                                            var i = iText.toDoubleOrNull() ?: 0.0
-                                            var rText by remember { mutableStateOf("") }
-                                            var r = rText.toDoubleOrNull() ?: 0.0
-                                            var tText by remember { mutableStateOf("") }
-                                            var t = tText.toDoubleOrNull() ?: 0.0
-                                            var p by remember { mutableDoubleStateOf(0.00) }
-                                            val options = listOf("In Year", "In Month")
-                                            var selectedOptionText by remember { mutableStateOf(options[0]) }
-                                            val rOptions = listOf("Per Year", "Per Month")
-                                            var rSelectedOptionText by remember { mutableStateOf(rOptions[0]) }
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            Text(
-                                                "Get Principle Amount",
-                                                fontSize = 20.sp,
-                                                fontWeight = FontWeight.Bold,
-                                                color = MaterialTheme.colorScheme.onPrimaryContainer
-                                            )
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            HorizontalDivider()
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            OutlinedTextField(
-                                                value = iText,
-                                                onValueChange = { iText = it },
-                                                label = { Text("Interest") },
-                                                singleLine = true,
-                                                modifier = Modifier
-                                                    .padding(horizontal = 20.dp)
-                                                    .fillMaxWidth(),
-                                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-                                            )
-                                            Spacer(modifier = Modifier.height(10.dp))
-                                            Row(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .padding(2.dp)
-                                            ) {
-                                                OutlinedTextField(
-                                                    value = rText,
-                                                    onValueChange = { rText = it },
-                                                    label = { Text("Rate of Interest") },
-                                                    singleLine = true,
-                                                    modifier = Modifier
-                                                        .padding(horizontal = 4.dp)
-                                                        .width(180.dp),
-                                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-                                                )
-                                                Spacer(modifier = Modifier.width(10.dp))
-                                                var expanded by remember { mutableStateOf(false) }
-
-                                                ExposedDropdownMenuBox(
-                                                    expanded = expanded,
-                                                    onExpandedChange = { expanded = !expanded }
-                                                ) {
-                                                    OutlinedTextField(
-                                                        value = rSelectedOptionText,
-                                                        onValueChange = {},
-                                                        readOnly = true,
-                                                        label = { Text("Select Rate type") },
-                                                        trailingIcon = {
-                                                            ExposedDropdownMenuDefaults.TrailingIcon(
-                                                                expanded = expanded
-                                                            )
-                                                        },
-                                                        modifier = Modifier
-                                                            .menuAnchor()
-                                                            .fillMaxWidth()
-                                                    )
-
-                                                    ExposedDropdownMenu(
-                                                        expanded = expanded,
-                                                        onDismissRequest = { expanded = false }
-                                                    ) {
-                                                        rOptions.forEach { selectionOption ->
-                                                            DropdownMenuItem(
-                                                                text = { Text(selectionOption) },
-                                                                onClick = {
-                                                                    rSelectedOptionText = selectionOption
-                                                                    expanded = false
-                                                                }
-                                                            )
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                            Spacer(modifier = Modifier.height(10.dp))
-                                            Row(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .padding(2.dp)
-                                            ) {
-                                                OutlinedTextField(
-                                                    value = tText,
-                                                    onValueChange = { tText = it },
-                                                    label = { Text("Time") },
-                                                    singleLine = true,
-                                                    modifier = Modifier
-                                                        .padding(horizontal = 4.dp)
-                                                        .width(180.dp),
-                                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-                                                )
-                                                Spacer(modifier = Modifier.width(10.dp))
-                                                var expanded by remember { mutableStateOf(false) }
-
-                                                ExposedDropdownMenuBox(
-                                                    expanded = expanded,
-                                                    onExpandedChange = { expanded = !expanded }
-                                                ) {
-                                                    OutlinedTextField(
-                                                        value = selectedOptionText,
-                                                        onValueChange = {},
-                                                        readOnly = true,
-                                                        label = { Text("Select time type") },
-                                                        trailingIcon = {
-                                                            ExposedDropdownMenuDefaults.TrailingIcon(
-                                                                expanded = expanded
-                                                            )
-                                                        },
-                                                        modifier = Modifier
-                                                            .menuAnchor()
-                                                            .fillMaxWidth()
-                                                    )
-
-                                                    ExposedDropdownMenu(
-                                                        expanded = expanded,
-                                                        onDismissRequest = { expanded = false }
-                                                    ) {
-                                                        options.forEach { selectionOption ->
-                                                            DropdownMenuItem(
-                                                                text = { Text(selectionOption) },
-                                                                onClick = {
-                                                                    selectedOptionText = selectionOption
-                                                                    expanded = false
-                                                                }
-                                                            )
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                            Spacer(modifier = Modifier.height(10.dp))
-                                            Button(
-                                                onClick = {
-                                                    try {
-                                                        p = when {
-                                                            rSelectedOptionText == "Per Year" && selectedOptionText == "In Month" -> {
-                                                                ((i * 100.0) / (r * (t / 12.0)))
-                                                            }
-
-                                                            rSelectedOptionText == "Per Month" && selectedOptionText == "In Year" -> {
-                                                                ((i * 100.0) / (r * (t * 12.0)))
-                                                            }
-
-                                                            rSelectedOptionText == "Per Month" && selectedOptionText == "In Month" -> {
-                                                                ((i * 100.0) / (r * t))
-                                                            }
-
-                                                            rSelectedOptionText == "Per Year" && selectedOptionText == "In Year" -> {
-                                                                ((i * 100.0) / (r * t))
-                                                            }
-
-                                                            else -> 0.0 // fallback in case of invalid input
-                                                        }
-                                                        p = BigDecimal(p).setScale(4, RoundingMode.HALF_UP)
-                                                            .toDouble()
-                                                        if (isVibrt) {
-                                                            if (Build.VERSION.SDK_INT <= 26) {
-                                                                vibrator.vibrate(100)
-                                                            } else {
-                                                                vibrator.vibrate(
-                                                                    VibrationEffect.createOneShot(
-                                                                        100,
-                                                                        VibrationEffect.DEFAULT_AMPLITUDE
-                                                                    )
-                                                                )
-                                                            }
-                                                        }
-                                                    } catch (ex: Exception) {
-                                                        scope.launch {
-                                                            snackbarHostState.showSnackbar(
-                                                                "Error :- ${ex.message}",
-                                                                withDismissAction = true,
-                                                                duration = SnackbarDuration.Short
-                                                            )
-                                                            if (isVibrt) {
-                                                                if (Build.VERSION.SDK_INT <= 26) {
-                                                                    vibrator.vibrate(100)
-                                                                } else {
-                                                                    vibrator.vibrate(
-                                                                        VibrationEffect.createOneShot(
-                                                                            100,
-                                                                            VibrationEffect.DEFAULT_AMPLITUDE
-                                                                        )
-                                                                    )
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                },
-                                                modifier = Modifier
-                                                    .padding(horizontal = 8.dp)
-                                                    .fillMaxWidth()
-                                            ) { Text("Calculate") }
-                                            Spacer(modifier = Modifier.height(10.dp))
-                                            Box(
-                                                modifier = Modifier
-                                                    .padding(horizontal = 8.dp)
-                                                    .fillMaxWidth()
-                                                    .height(50.dp)
-                                                    .shadow(
-                                                        elevation = 1.dp,
-                                                        shape = RoundedCornerShape(10.dp)
-                                                    )
-                                                    .background(MaterialTheme.colorScheme.onSecondaryContainer)
-                                            ) {
-                                                Text(
-                                                    "Principle Amount = $p",
-                                                    color = MaterialTheme.colorScheme.secondaryContainer,
-                                                    fontSize = 15.sp,
-                                                    fontWeight = FontWeight.SemiBold,
-                                                    modifier = Modifier.align(Alignment.Center)
-                                                )
-                                            }
-                                        }
-                                    }
-                                }
-
-                                "Rate of Interest Calculator" -> {
-                                    Card {
-                                        Column(
-                                            modifier = Modifier
-                                                .padding(5.dp)
-                                                .fillMaxWidth()
-                                                .background(MaterialTheme.colorScheme.primaryContainer),
-                                            horizontalAlignment = Alignment.CenterHorizontally
-                                        ) {
-                                            var iText by remember { mutableStateOf("") }
-                                            var i = iText.toDoubleOrNull() ?: 0.0
-                                            var pText by remember { mutableStateOf("") }
-                                            var p = pText.toDoubleOrNull() ?: 0.0
-                                            var r by remember { mutableDoubleStateOf(0.0) }
-                                            var tText by remember { mutableStateOf("") }
-                                            var t = tText.toDoubleOrNull() ?: 0.0
-                                            val options = listOf("In Year", "In Month")
-                                            var selectedOptionText by remember { mutableStateOf(options[0]) }
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            Text(
-                                                "Get Rate of Interest", fontSize = 20.sp,
-                                                fontWeight = FontWeight.Bold,
-                                                color = MaterialTheme.colorScheme.onPrimaryContainer
-                                            )
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            HorizontalDivider()
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            OutlinedTextField(
-                                                value = iText,
-                                                onValueChange = { iText = it },
-                                                label = { Text("Interest") },
-                                                singleLine = true,
-                                                modifier = Modifier
-                                                    .padding(horizontal = 20.dp)
-                                                    .fillMaxWidth(),
-                                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-                                            )
-                                            Spacer(modifier = Modifier.height(10.dp))
-                                            OutlinedTextField(
-                                                value = pText,
-                                                onValueChange = { pText = it },
-                                                label = { Text("Principle Amount") },
-                                                singleLine = true,
-                                                modifier = Modifier
-                                                    .padding(horizontal = 20.dp)
-                                                    .fillMaxWidth(),
-                                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-                                            )
-                                            Spacer(modifier = Modifier.height(10.dp))
-                                            Row(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .padding(2.dp)
-                                            ) {
-                                                OutlinedTextField(
-                                                    value = tText,
-                                                    onValueChange = { tText = it },
-                                                    label = { Text("Time") },
-                                                    singleLine = true,
-                                                    modifier = Modifier
-                                                        .padding(horizontal = 4.dp)
-                                                        .width(180.dp),
-                                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-                                                )
-                                                Spacer(modifier = Modifier.width(10.dp))
-                                                var expanded by remember { mutableStateOf(false) }
-
-                                                ExposedDropdownMenuBox(
-                                                    expanded = expanded,
-                                                    onExpandedChange = { expanded = !expanded }
-                                                ) {
-                                                    OutlinedTextField(
-                                                        value = selectedOptionText,
-                                                        onValueChange = {},
-                                                        readOnly = true,
-                                                        label = { Text("Select time type") },
-                                                        trailingIcon = {
-                                                            ExposedDropdownMenuDefaults.TrailingIcon(
-                                                                expanded = expanded
-                                                            )
-                                                        },
-                                                        modifier = Modifier
-                                                            .menuAnchor()
-                                                            .fillMaxWidth()
-                                                    )
-
-                                                    ExposedDropdownMenu(
-                                                        expanded = expanded,
-                                                        onDismissRequest = { expanded = false }
-                                                    ) {
-                                                        options.forEach { selectionOption ->
-                                                            DropdownMenuItem(
-                                                                text = { Text(selectionOption) },
-                                                                onClick = {
-                                                                    selectedOptionText = selectionOption
-                                                                    expanded = false
-                                                                }
-                                                            )
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            Button(
-                                                onClick = {
-                                                    try {
-                                                        r = when (selectedOptionText) {
-                                                            "In Month" -> {
-                                                                i * 100.0 / (p * (t / 12.0))
-                                                            }
-
-                                                            "In Year" -> {
-                                                                i * 100.0 / (p * t)
-                                                            }
-
-                                                            else -> 0.0
-                                                        }
-                                                    } catch (ex: Exception) {
-                                                        scope.launch {
-                                                            snackbarHostState.showSnackbar(
-                                                                "Error :- ${ex.message}",
-                                                                withDismissAction = true,
-                                                                duration = SnackbarDuration.Short
-                                                            )
-                                                        }
-                                                    }
-                                                    if (isVibrt) {
-                                                        if (Build.VERSION.SDK_INT <= 26) {
-                                                            vibrator.vibrate(100)
-                                                        } else {
-                                                            vibrator.vibrate(
-                                                                VibrationEffect.createOneShot(
-                                                                    100,
-                                                                    VibrationEffect.DEFAULT_AMPLITUDE
-                                                                )
-                                                            )
-                                                        }
-                                                    }
-                                                },
-                                                modifier = Modifier
-                                                    .padding(horizontal = 8.dp)
-                                                    .fillMaxWidth()
-                                            ) { Text("Calculate") }
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            Box(
-                                                modifier = Modifier
-                                                    .padding(horizontal = 8.dp)
-                                                    .fillMaxWidth()
-                                                    .height(50.dp)
-                                                    .shadow(
-                                                        elevation = 1.dp,
-                                                        shape = RoundedCornerShape(10.dp)
-                                                    )
-                                                    .background(MaterialTheme.colorScheme.onSecondaryContainer)
-                                            ) {
-                                                Text(
-                                                    "Rate = $r%",
-                                                    color = MaterialTheme.colorScheme.secondaryContainer,
-                                                    fontSize = 15.sp,
-                                                    fontWeight = FontWeight.SemiBold,
-                                                    modifier = Modifier.align(Alignment.Center)
-                                                )
-                                            }
-                                        }
-                                    }
-                                }
-
-                                "Time of Interest Calculator" -> {
-                                    Card {
-                                        Column(
-                                            modifier = Modifier
-                                                .padding(5.dp)
-                                                .fillMaxWidth()
-                                                .background(MaterialTheme.colorScheme.primaryContainer),
-                                            horizontalAlignment = Alignment.CenterHorizontally
-                                        ) {
-                                            var iText by remember { mutableStateOf("") }
-                                            var i = iText.toDoubleOrNull() ?: 0.0
-                                            var pText by remember { mutableStateOf("") }
-                                            var p = pText.toDoubleOrNull() ?: 0.0
-                                            val rOptions = listOf("Per Year", "Per Month")
-                                            var rSelectedOptionText by remember { mutableStateOf(rOptions[0]) }
-                                            var rText by remember { mutableStateOf("") }
-                                            var r = rText.toDoubleOrNull() ?: 0.0
-                                            var t by remember { mutableDoubleStateOf(0.0) }
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            Text(
-                                                text = "Get Time of Interest",
-                                                fontSize = 20.sp,
-                                                fontWeight = FontWeight.Bold,
-                                                color = MaterialTheme.colorScheme.onPrimaryContainer
-                                            )
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            HorizontalDivider()
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            OutlinedTextField(
-                                                value = iText,
-                                                singleLine = true,
-                                                onValueChange = { iText = it },
-                                                modifier = Modifier
-                                                    .padding(horizontal = 20.dp)
-                                                    .fillMaxWidth(),
-                                                label = { Text("Interest") },
-                                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-                                            )
-                                            Spacer(modifier = Modifier.height(10.dp))
-                                            OutlinedTextField(
-                                                value = pText,
-                                                singleLine = true,
-                                                onValueChange = { pText = it },
-                                                modifier = Modifier
-                                                    .padding(horizontal = 20.dp)
-                                                    .fillMaxWidth(),
-                                                label = { Text("Principle Amount") },
-                                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-                                            )
-                                            Spacer(modifier = Modifier.height(10.dp))
-                                            Row(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .padding(2.dp)
-                                            ) {
-                                                OutlinedTextField(
-                                                    value = rText,
-                                                    onValueChange = { rText = it },
-                                                    label = { Text("Rate of Interest") },
-                                                    singleLine = true,
-                                                    modifier = Modifier
-                                                        .padding(horizontal = 4.dp)
-                                                        .width(180.dp),
-                                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-                                                )
-                                                Spacer(modifier = Modifier.width(10.dp))
-                                                var expanded by remember { mutableStateOf(false) }
-
-                                                ExposedDropdownMenuBox(
-                                                    expanded = expanded,
-                                                    onExpandedChange = { expanded = !expanded }
-                                                ) {
-                                                    OutlinedTextField(
-                                                        value = rSelectedOptionText,
-                                                        onValueChange = {},
-                                                        readOnly = true,
-                                                        label = { Text("Select Rate type") },
-                                                        trailingIcon = {
-                                                            ExposedDropdownMenuDefaults.TrailingIcon(
-                                                                expanded = expanded
-                                                            )
-                                                        },
-                                                        modifier = Modifier
-                                                            .menuAnchor()
-                                                            .fillMaxWidth()
-                                                    )
-
-                                                    ExposedDropdownMenu(
-                                                        expanded = expanded,
-                                                        onDismissRequest = { expanded = false }
-                                                    ) {
-                                                        rOptions.forEach { selectionOption ->
-                                                            DropdownMenuItem(
-                                                                text = { Text(selectionOption) },
-                                                                onClick = {
-                                                                    rSelectedOptionText = selectionOption
-                                                                    expanded = false
-                                                                }
-                                                            )
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            Button(
-                                                onClick = {
-                                                    try {
-                                                        t = when (rSelectedOptionText) {
-                                                            "Per Year" -> {
-                                                                i * 100 / (p * r)
-                                                            }
-
-                                                            "Per Month" -> {
-                                                                i * 100 / (p * r * 12.0)
-                                                            }
-
-                                                            else -> 0.0
-                                                        }
-                                                    } catch (ex: Exception) {
-                                                        scope.launch {
-                                                            snackbarHostState.showSnackbar(
-                                                                "Error :- ${ex.message}",
-                                                                withDismissAction = true,
-                                                                duration = SnackbarDuration.Short
-                                                            )
-                                                        }
-                                                    }
-                                                    if (isVibrt) {
-                                                        if (Build.VERSION.SDK_INT <= 26) {
-                                                            vibrator.vibrate(100)
-                                                        } else {
-                                                            vibrator.vibrate(
-                                                                VibrationEffect.createOneShot(
-                                                                    100,
-                                                                    VibrationEffect.DEFAULT_AMPLITUDE
-                                                                )
-                                                            )
-                                                        }
-                                                    }
-                                                },
-                                                modifier = Modifier
-                                                    .padding(horizontal = 8.dp)
-                                                    .fillMaxWidth()
-                                            ) { Text("Calculate") }
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            Box(
-                                                modifier = Modifier
-                                                    .padding(horizontal = 8.dp)
-                                                    .shadow(
-                                                        elevation = 1.dp,
-                                                        shape = RoundedCornerShape(10.dp)
-                                                    )
-                                                    .background(
-                                                        MaterialTheme.colorScheme.onSecondaryContainer
-                                                    )
-                                                    .fillMaxWidth()
-                                                    .height(50.dp)
-                                            ) {
-                                                Text(
-                                                    "Time = $t",
-                                                    modifier = Modifier.align(Alignment.Center),
-                                                    fontSize = 15.sp,
-                                                    fontWeight = FontWeight.SemiBold,
-                                                    color = MaterialTheme.colorScheme.secondaryContainer
-                                                )
-                                            }
-                                        }
-                                    }
-                                }
-
-                                "Average Calculator" -> {
-                                    Card {
-                                        Column(
-                                            modifier = Modifier
-                                                .padding(5.dp)
-                                                .fillMaxWidth()
-                                                .background(
-                                                    MaterialTheme.colorScheme.primaryContainer
-                                                ), horizontalAlignment = Alignment.CenterHorizontally
-                                        ) {
-                                            var numItem by remember { mutableIntStateOf(0) }
-                                            var chcknum by remember { mutableStateOf(false) }
-                                            var isOnItems by remember { mutableStateOf(false) }
-                                            var average by remember { mutableDoubleStateOf(0.00) }
-                                            var items by remember { mutableStateOf(mutableListOf<Double>()) }
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            Text(
-                                                "Get Average",
-                                                fontSize = 20.sp,
-                                                fontWeight = FontWeight.Bold,
-                                                color = MaterialTheme.colorScheme.onPrimaryContainer
-                                            )
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            HorizontalDivider()
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            OutlinedTextField(
-                                                value = if (numItem == 0) "" else numItem.toString(),
-                                                onValueChange = { numItem = it.toIntOrNull() ?: 0 },
-                                                label = { Text("How many Number of Items") },
-                                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                                modifier = Modifier
-                                                    .padding(horizontal = 20.dp)
-                                                    .fillMaxWidth()
-                                            )
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            Button(
-                                                onClick = {
-                                                    items = List(numItem) { 0.00 }.toMutableList()
-                                                    // animated scroll to bottom
-                                                    isBottomScroll = true
-                                                    //on the chcknum
-                                                    if (numItem < 1) {
-                                                        chcknum = true
-                                                    } else {
-                                                        chcknum = false
-                                                        isOnItems = true
-                                                        numItem = 0
-                                                    }
-
-                                                },
-                                                modifier = Modifier
-                                                    .padding(horizontal = 20.dp)
-                                                    .fillMaxWidth()
-                                            ) { Text("Add ${if (numItem < 2) "Item" else "Items"}") }
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            if (!chcknum) {
-                                                if (isOnItems) {
-                                                    LazyColumn(
-                                                        modifier = Modifier
-                                                            .padding(vertical = 3.dp, horizontal = 5.dp)
-                                                            .height(125.dp)
-                                                            .fillMaxWidth()
-                                                    ) {
-                                                        itemsIndexed(items) { index, item ->
-                                                            val imeAction =
-                                                                if (index < items.lastIndex) ImeAction.Next else ImeAction.Done
-
-                                                            OutlinedTextField(
-                                                                value = if (item == 0.00) "" else item.toString(),
-                                                                onValueChange = { newValue ->
-                                                                    val parsedValue =
-                                                                        newValue.toDoubleOrNull()
-                                                                    if (parsedValue != null) {
-                                                                        items = items.toMutableList()
-                                                                            .apply {
-                                                                                this[index] = parsedValue
-                                                                            }
-                                                                    }
-                                                                },
-                                                                modifier = Modifier
-                                                                    .padding(horizontal = 5.dp)
-                                                                    .fillMaxWidth(),
-                                                                keyboardOptions = KeyboardOptions.Default.copy(
-                                                                    keyboardType = KeyboardType.Decimal,
-                                                                    imeAction = imeAction
-                                                                ),
-                                                                label = { Text("Item ${index + 1}") }
-                                                            )
-                                                        }
-                                                    }
-                                                    Spacer(modifier = Modifier.height(2.dp))
-                                                    Text(
-                                                        "^ ^ ^ This is scrollable ^ ^ ^",
-                                                        color = MaterialTheme.colorScheme.onPrimaryContainer
-                                                    )
-                                                    Spacer(modifier = Modifier.height(5.dp))
-                                                    Button(
-                                                        onClick = {
-                                                            //todo : main average function
-                                                            //sun of all digits in the list
-                                                            average = items.sum()
-                                                            //divide the sum by the number of items
-                                                            average /= items.size
-                                                            //todo : done !!!
-
-                                                            //todo vibrate
-                                                            if (isVibrt) {
-                                                                if (Build.VERSION.SDK_INT <= 26) {
-                                                                    vibrator.vibrate(100)
-                                                                } else {
-                                                                    vibrator.vibrate(
-                                                                        VibrationEffect.createOneShot(
-                                                                            100,
-                                                                            VibrationEffect.DEFAULT_AMPLITUDE
-                                                                        )
-                                                                    )
-                                                                }
-                                                            }
-                                                        },
-                                                        modifier = Modifier
-                                                            .padding(8.dp)
-                                                            .fillMaxWidth()
-                                                    ) { Text("Calculate") }
-                                                    Spacer(modifier = Modifier.height(5.dp))
-                                                    Box(
-                                                        modifier = Modifier
-                                                            .padding(horizontal = 8.dp)
-                                                            .shadow(
-                                                                elevation = 1.dp,
-                                                                shape = RoundedCornerShape(8.dp)
-                                                            )
-                                                            .background(MaterialTheme.colorScheme.onSecondaryContainer)
-                                                            .fillMaxWidth()
-                                                            .height(50.dp)
-                                                    ) {
-                                                        Text(
-                                                            "Average = $average",
-                                                            color = MaterialTheme.colorScheme.secondaryContainer,
-                                                            fontSize = 15.sp,
-                                                            fontWeight = FontWeight.SemiBold,
-                                                            modifier = Modifier.align(Alignment.Center)
-                                                        )
-                                                    }
-                                                }
-                                            } else {
-                                                LaunchedEffect(Unit) {
-                                                    scope.launch {
-                                                        snackbarHostState.showSnackbar(
-                                                            "You can't add item (s) without enter number of item !",
-                                                            withDismissAction = true
-                                                        )
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-
-                                "Square Area Calculator" -> {
-                                    Card {
-                                        var sideText by remember { mutableStateOf("") }
-                                        var side = sideText.toDoubleOrNull() ?: 0.0
-                                        var area by remember { mutableDoubleStateOf(0.0) }
-                                        Column(
-                                            modifier = Modifier
-                                                .padding(5.dp)
-                                                .fillMaxWidth()
-                                                .background(MaterialTheme.colorScheme.primaryContainer),
-                                            horizontalAlignment = Alignment.CenterHorizontally
-                                        ) {
-                                            Text(
-                                                "Get Area Of Square",
-                                                fontSize = 20.sp,
-                                                fontWeight = FontWeight.Bold,
-                                                color = MaterialTheme.colorScheme.onPrimaryContainer
-                                            )
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            HorizontalDivider()
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            OutlinedTextField(
-                                                value = sideText,
-                                                onValueChange = { sideText = it },
-                                                label = { Text("Side") },
-                                                singleLine = true,
-                                                modifier = Modifier
-                                                    .padding(horizontal = 20.dp)
-                                                    .fillMaxWidth(),
-                                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-                                            )
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            Row(
-                                                modifier = Modifier
-                                                    .padding(horizontal = 8.dp)
-                                                    .fillMaxWidth(),
-                                                horizontalArrangement = Arrangement.Start,
-                                                verticalAlignment = Alignment.CenterVertically
-                                            ) {
-                                                Text(
-                                                    "Note :- All Side Must Be Same",
-                                                    color = MaterialTheme.colorScheme.onPrimaryContainer,
-                                                    fontSize = 15.sp,
-                                                    fontWeight = FontWeight.Medium
-                                                )
-                                            }
-
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            Button(
-                                                onClick = {
-                                                    area = side.pow(2)
-                                                    //not use area = side * side , simply use pow() it mean side^2 (area = side power of 2)
-                                                    //todo vibrate
-                                                    if (isVibrt) {
-                                                        if (Build.VERSION.SDK_INT <= 26) {
-                                                            vibrator.vibrate(100)
-                                                        } else {
-                                                            vibrator.vibrate(
-                                                                VibrationEffect.createOneShot(
-                                                                    100,
-                                                                    VibrationEffect.DEFAULT_AMPLITUDE
-                                                                )
-                                                            )
-                                                        }
-                                                    }
-                                                }, modifier = Modifier
-                                                    .padding(horizontal = 8.dp)
-                                                    .fillMaxWidth()
-                                            ) { Text("Calculate") }
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            Box(
-                                                modifier = Modifier
-                                                    .padding(horizontal = 8.dp)
-                                                    .fillMaxWidth()
-                                                    .height(50.dp)
-                                                    .shadow(
-                                                        elevation = 1.dp,
-                                                        shape = RoundedCornerShape(10.dp)
-                                                    )
-                                                    .background(MaterialTheme.colorScheme.onSecondaryContainer)
-                                            ) {
-                                                Text(
-                                                    "Area Of Square = $area²",
-                                                    color = MaterialTheme.colorScheme.secondaryContainer,
-                                                    fontSize = 15.sp,
-                                                    fontWeight = FontWeight.SemiBold,
-                                                    modifier = Modifier.align(Alignment.Center)
-                                                )
-                                            }
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                        }
-                                    }
-                                }
-
-                                "Rectangle Area Calculator" -> {
-                                    Card {
-                                        var bText by remember { mutableStateOf("") }
-                                        var b = bText.toDoubleOrNull() ?: 0.0
-                                        var lText by remember { mutableStateOf("") }
-                                        var l = lText.toDoubleOrNull() ?: 0.0
-                                        var area by remember { mutableDoubleStateOf(0.0) }
-                                        Column(
-                                            modifier = Modifier
-                                                .padding(5.dp)
-                                                .background(
-                                                    MaterialTheme.colorScheme.primaryContainer
-                                                )
-                                                .fillMaxWidth(),
-                                            horizontalAlignment = Alignment.CenterHorizontally
-                                        ) {
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            Text(
-                                                "Get Area Of Rectangle",
-                                                fontSize = 20.sp,
-                                                fontWeight = FontWeight.Bold,
-                                                color = MaterialTheme.colorScheme.onPrimaryContainer
-                                            )
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            HorizontalDivider()
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            OutlinedTextField(
-                                                value = lText,
-                                                onValueChange = { lText = it },
-                                                label = { Text("Length") },
-                                                singleLine = true,
-                                                modifier = Modifier
-                                                    .padding(horizontal = 20.dp)
-                                                    .fillMaxWidth(),
-                                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-                                            )
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            OutlinedTextField(
-                                                value = bText,
-                                                onValueChange = { bText = it },
-                                                label = { Text("Breadth") },
-                                                singleLine = true,
-                                                modifier = Modifier
-                                                    .padding(horizontal = 20.dp)
-                                                    .fillMaxWidth(),
-                                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-                                            )
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            Button(
-                                                onClick = {
-                                                    area = l * b
-                                                    //todo vibrate
-                                                    if (isVibrt) {
-                                                        if (Build.VERSION.SDK_INT <= 26) {
-                                                            vibrator.vibrate(100)
-                                                        } else {
-                                                            vibrator.vibrate(
-                                                                VibrationEffect.createOneShot(
-                                                                    100,
-                                                                    VibrationEffect.DEFAULT_AMPLITUDE
-                                                                )
-                                                            )
-                                                        }
-                                                    }
-                                                },
-                                                modifier = Modifier
-                                                    .padding(horizontal = 8.dp)
-                                                    .fillMaxWidth()
-                                            ) { Text("Calculate") }
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            Box(
-                                                modifier = Modifier
-                                                    .padding(horizontal = 8.dp)
-                                                    .fillMaxWidth()
-                                                    .height(50.dp)
-                                                    .shadow(
-                                                        elevation = 1.dp,
-                                                        shape = RoundedCornerShape(10.dp)
-                                                    )
-                                                    .background(MaterialTheme.colorScheme.onSecondaryContainer)
-                                            ) {
-                                                Text(
-                                                    "Area Of Rectangle = $area²",
-                                                    color = MaterialTheme.colorScheme.secondaryContainer,
-                                                    fontSize = 15.sp,
-                                                    fontWeight = FontWeight.SemiBold,
-                                                    modifier = Modifier.align(Alignment.Center)
-                                                )
-                                            }
-                                        }
-                                    }
-                                }
-
-                                "Circle Area Calculator" -> {
-                                    Card {
-                                        var rText by remember { mutableStateOf("") }
-                                        var r = rText.toDoubleOrNull() ?: 0.0
-                                        var area by remember { mutableDoubleStateOf(0.0) }
-                                        Column(
-                                            modifier = Modifier
-                                                .padding(5.dp)
-                                                .background(
-                                                    MaterialTheme.colorScheme.primaryContainer
-                                                )
-                                                .fillMaxWidth(),
-                                            horizontalAlignment = Alignment.CenterHorizontally
-                                        ) {
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            Text(
-                                                "Get Area Of Circle",
-                                                fontSize = 20.sp,
-                                                fontWeight = FontWeight.Bold,
-                                                color = MaterialTheme.colorScheme.onPrimaryContainer
-                                            )
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            HorizontalDivider()
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            OutlinedTextField(
-                                                value = rText,
-                                                onValueChange = { rText = it },
-                                                label = { Text("Radius") },
-                                                singleLine = true,
-                                                modifier = Modifier
-                                                    .padding(horizontal = 20.dp)
-                                                    .fillMaxWidth(),
-                                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-                                            )
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            Button(
-                                                onClick = {
-                                                    area = PI * r.pow(2)
-                                                    //todo vibrate
-                                                    if (isVibrt) {
-                                                        if (Build.VERSION.SDK_INT <= 26) {
-                                                            vibrator.vibrate(100)
-                                                        } else {
-                                                            vibrator.vibrate(
-                                                                VibrationEffect.createOneShot(
-                                                                    100,
-                                                                    VibrationEffect.DEFAULT_AMPLITUDE
-                                                                )
-                                                            )
-                                                        }
-                                                    }
-                                                },
-                                                modifier = Modifier
-                                                    .padding(horizontal = 8.dp)
-                                                    .fillMaxWidth()
-                                            ) { Text("Calculate") }
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            Box(
-                                                modifier = Modifier
-                                                    .padding(horizontal = 8.dp)
-                                                    .fillMaxWidth()
-                                                    .height(50.dp)
-                                                    .shadow(
-                                                        elevation = 1.dp,
-                                                        shape = RoundedCornerShape(10.dp)
-                                                    )
-                                                    .background(MaterialTheme.colorScheme.onSecondaryContainer)
-
-                                            ) {
-                                                Text(
-                                                    "Area Of Circle = $area²",
-                                                    color = MaterialTheme.colorScheme.secondaryContainer,
-                                                    fontSize = 15.sp,
-                                                    fontWeight = FontWeight.SemiBold,
-                                                    modifier = Modifier.align(Alignment.Center)
-                                                )
-                                            }
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                        }
-                                    }
-                                }
-
-                                "Cube Volume Calculator" -> {
-                                    Card {
-                                        var sideText by remember { mutableStateOf("") }
-                                        var side = sideText.toDoubleOrNull() ?: 0.0
-                                        var volume by remember { mutableDoubleStateOf(0.0) }
-                                        Column(
-                                            modifier = Modifier
-                                                .padding(5.dp)
-                                                .background(
-                                                    MaterialTheme.colorScheme.primaryContainer
-                                                )
-                                                .fillMaxWidth(),
-                                            horizontalAlignment = Alignment.CenterHorizontally
-                                        ) {
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            Text(
-                                                "Get Volume Of Cube",
-                                                fontSize = 20.sp,
-                                                fontWeight = FontWeight.Bold,
-                                                color = MaterialTheme.colorScheme.onPrimaryContainer
-                                            )
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            HorizontalDivider()
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            OutlinedTextField(
-                                                value = sideText,
-                                                onValueChange = { sideText = it },
-                                                label = { Text("Side") },
-                                                singleLine = true,
-                                                modifier = Modifier
-                                                    .padding(horizontal = 20.dp)
-                                                    .fillMaxWidth(),
-                                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-                                            )
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            Box(
-                                                modifier = Modifier
-                                                    .padding(horizontal = 8.dp)
-                                                    .fillMaxWidth()
-                                            ) {
-                                                Text(
-                                                    "Note :- All Side Must Be Same",
-                                                    modifier = Modifier.align(Alignment.CenterStart),
-                                                    fontSize = 15.sp,
-                                                    fontWeight = FontWeight.Medium
-                                                )
-                                            }
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            Button(
-                                                onClick = {
-                                                    //todo : main area function
-                                                    volume = side.pow(3)
-                                                    //not use area = side * side * side , simply use pow() it mean side^3 (area = side power of 3)
-                                                    //todo vibrate
-                                                    if (isVibrt) {
-                                                        if (Build.VERSION.SDK_INT <= 26) {
-                                                            vibrator.vibrate(100)
-                                                        } else {
-                                                            vibrator.vibrate(
-                                                                VibrationEffect.createOneShot(
-                                                                    100,
-                                                                    VibrationEffect.DEFAULT_AMPLITUDE
-                                                                )
-                                                            )
-                                                        }
-                                                    }
-                                                },
-                                                modifier = Modifier
-                                                    .padding(horizontal = 8.dp)
-                                                    .fillMaxWidth()
-                                            ) { Text("Calculate") }
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            Box(
-                                                modifier = Modifier
-                                                    .padding(horizontal = 8.dp)
-                                                    .fillMaxWidth()
-                                                    .height(50.dp)
-                                                    .shadow(
-                                                        elevation = 1.dp,
-                                                        shape = RoundedCornerShape(10.dp)
-                                                    )
-                                                    .background(MaterialTheme.colorScheme.onSecondaryContainer)
-                                            ) {
-                                                Text(
-                                                    "Volume Of Cube = $volume³",
-                                                    fontSize = 15.sp,
-                                                    fontWeight = FontWeight.SemiBold,
-                                                    color = MaterialTheme.colorScheme.secondaryContainer,
-                                                    modifier = Modifier.align(Alignment.Center)
-                                                )
-                                            }
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                        }
-                                    }
-                                }
-
-                                "Cuboid Volume Calculator" -> {
-                                    Card {
-                                        var lText by remember { mutableStateOf("") }
-                                        var l = lText.toDoubleOrNull() ?: 0.0
-                                        var bText by remember { mutableStateOf("") }
-                                        var b = bText.toDoubleOrNull() ?: 0.0
-                                        var hText by remember { mutableStateOf("") }
-                                        var h = hText.toDoubleOrNull() ?: 0.0
-                                        var volume by remember { mutableDoubleStateOf(0.0) }
-                                        Column(
-                                            modifier = Modifier
-                                                .padding(5.dp)
-                                                .background(
-                                                    MaterialTheme.colorScheme.primaryContainer
-                                                )
-                                                .fillMaxWidth(),
-                                            horizontalAlignment = Alignment.CenterHorizontally
-                                        ) {
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            Text(
-                                                "Get Volume Of Cuboid",
-                                                fontSize = 25.sp,
-                                                fontWeight = FontWeight.Bold,
-                                                color = MaterialTheme.colorScheme.onPrimaryContainer
-                                            )
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            HorizontalDivider()
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            OutlinedTextField(
-                                                value = lText,
-                                                onValueChange = { lText = it },
-                                                label = { Text("Length") },
-                                                singleLine = true,
-                                                modifier = Modifier
-                                                    .padding(horizontal = 20.dp)
-                                                    .fillMaxWidth(),
-                                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-                                            )
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            OutlinedTextField(
-                                                value = bText,
-                                                onValueChange = { bText = it },
-                                                label = { Text("Breadth") },
-                                                singleLine = true,
-                                                modifier = Modifier
-                                                    .padding(horizontal = 20.dp)
-                                                    .fillMaxWidth(),
-                                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-                                            )
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            OutlinedTextField(
-                                                value = hText,
-                                                onValueChange = { hText = it },
-                                                label = { Text("Height") },
-                                                singleLine = true,
-                                                modifier = Modifier
-                                                    .padding(horizontal = 20.dp)
-                                                    .fillMaxWidth(),
-                                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-                                            )
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            Button(
-                                                onClick = {
-                                                    //todo : main area function
-                                                    volume = l * b * h
-                                                    //todo vibrate
-                                                    if (isVibrt) {
-                                                        if (Build.VERSION.SDK_INT <= 26) {
-                                                            vibrator.vibrate(100)
-                                                        } else {
-                                                            vibrator.vibrate(
-                                                                VibrationEffect.createOneShot(
-                                                                    100,
-                                                                    VibrationEffect.DEFAULT_AMPLITUDE
-                                                                )
-                                                            )
-                                                        }
-                                                    }
-                                                },
-                                                modifier = Modifier
-                                                    .padding(horizontal = 8.dp)
-                                                    .fillMaxWidth()
-                                            ) { Text("Calculate") }
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            Box(
-                                                modifier = Modifier
-                                                    .padding(horizontal = 8.dp)
-                                                    .fillMaxWidth()
-                                                    .height(50.dp)
-                                                    .shadow(
-                                                        elevation = 1.dp,
-                                                        shape = RoundedCornerShape(10.dp)
-                                                    )
-                                                    .background(MaterialTheme.colorScheme.onSecondaryContainer)
-                                            ) {
-                                                Text(
-                                                    "Volume Of Cuboid = $volume³",
-                                                    fontSize = 15.sp,
-                                                    fontWeight = FontWeight.SemiBold,
-                                                    color = MaterialTheme.colorScheme.secondaryContainer,
-                                                    modifier = Modifier.align(Alignment.Center)
-                                                )
-                                            }
-                                        }
-                                    }
-                                }
-
-                                "Cylinder Volume Calculator" -> {
-                                    Card {
-                                        var hegText by remember { mutableStateOf("") }
-                                        var rdsText by remember { mutableStateOf("") }
-                                        var volume by remember { mutableDoubleStateOf(0.0) }
-
-                                        fun calcVol() {
-                                            try {
-                                                var height = BigDecimal(hegText.toDoubleOrNull() ?: 0.0)
-                                                var radius = BigDecimal(rdsText.toDoubleOrNull() ?: 0.0)
-                                                val pi = BigDecimal(PI, MathContext.DECIMAL128)
-                                                val res = pi.multiply(radius.pow(2)).multiply(height)
-                                                volume = res.setScale(2, RoundingMode.HALF_UP).toDouble()
-                                            } catch (ex: Exception) {
-                                                volume = 000.000
-                                                scope.launch {
-                                                    snackbarHostState.showSnackbar(
-                                                        "Invalid Input !, Error Code :- ${ex.message}",
-                                                        withDismissAction = true,
-                                                        duration = SnackbarDuration.Long
-                                                    )
-                                                }
-                                                Log.e(
-                                                    "DEV LOG",
-                                                    "Invalid Input !, Error Code :- ${ex.message} , Full Error Is In Down \n|\n|\n|"
-                                                )
-                                                Log.e("DEV LOG", "Full Error :- $ex")
-                                            }
-
-                                        }
-
-                                        Column(
-                                            modifier = Modifier
-                                                .padding(5.dp)
-                                                .background(MaterialTheme.colorScheme.primaryContainer)
-                                                .fillMaxWidth(),
-                                            horizontalAlignment = Alignment.CenterHorizontally
-                                        ) {
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            Text(
-                                                "Get Volume Of Cylinder",
-                                                fontSize = 20.sp,
-                                                fontWeight = FontWeight.Bold,
-                                                color = MaterialTheme.colorScheme.onPrimaryContainer
-                                            )
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            HorizontalDivider()
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            OutlinedTextField(
-                                                value = hegText,
-                                                onValueChange = { hegText = it },
-                                                label = { Text("Height") },
-                                                singleLine = true,
-                                                modifier = Modifier
-                                                    .padding(horizontal = 20.dp)
-                                                    .fillMaxWidth(),
-                                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-                                            )
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            OutlinedTextField(
-                                                value = rdsText,
-                                                onValueChange = { rdsText = it },
-                                                label = { Text("Radius") },
-                                                singleLine = true,
-                                                modifier = Modifier
-                                                    .padding(horizontal = 20.dp)
-                                                    .fillMaxWidth(),
-                                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-                                            )
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            Button(
-                                                onClick = {
-                                                    //todo : main area function
-                                                    calcVol()
-                                                    //todo vibrate
-                                                    if (isVibrt) {
-                                                        if (Build.VERSION.SDK_INT <= 26) {
-                                                            vibrator.vibrate(100)
-                                                        } else {
-                                                            vibrator.vibrate(
-                                                                VibrationEffect.createOneShot(
-                                                                    100,
-                                                                    VibrationEffect.DEFAULT_AMPLITUDE
-                                                                )
-                                                            )
-                                                        }
-                                                    }
-                                                },
-                                                modifier = Modifier
-                                                    .padding(horizontal = 8.dp)
-                                                    .fillMaxWidth()
-                                            ) { Text("Calculate") }
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                            Box(
-                                                modifier = Modifier
-                                                    .padding(horizontal = 8.dp)
-                                                    .fillMaxWidth()
-                                                    .height(50.dp)
-                                                    .shadow(
-                                                        elevation = 1.dp,
-                                                        shape = RoundedCornerShape(10.dp)
-                                                    )
-                                                    .background(MaterialTheme.colorScheme.onSecondaryContainer)
-                                            ) {
-                                                Text(
-                                                    "Volume Of Cylinder = $volume³",
-                                                    fontSize = 15.sp,
-                                                    fontWeight = FontWeight.SemiBold,
-                                                    color = MaterialTheme.colorScheme.secondaryContainer,
-                                                    modifier = Modifier.align(Alignment.Center)
-                                                )
-                                            }
-                                            Spacer(modifier = Modifier.height(5.dp))
-                                        }
-                                    }
-                                }
-
-                                else -> {
-                                    Text(
-                                        " ^ Please Select Calculator Type ^ ",
-                                        fontSize = 20.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.onTertiaryContainer
                                     )
                                 }
                             }
                         }
+
+                        Spacer(modifier = Modifier.height(15.dp))
+                        when (selectedCalcType) {
+                            "Simple Interest Calculator" -> {
+                                Card {
+                                    val options = listOf("In Year", "In Month")
+                                    var selectedOptionText by remember { mutableStateOf(options[0]) }
+                                    val rOptions = listOf("Per Year", "Per Month")
+                                    var rSelectedOptionText by remember { mutableStateOf(rOptions[0]) }
+                                    var pText by remember { mutableStateOf("") }
+                                    var p = pText.toDoubleOrNull() ?: 0.0
+                                    var rText by remember { mutableStateOf("") }
+                                    var r = rText.toDoubleOrNull() ?: 0.0
+                                    var si by remember { mutableDoubleStateOf(0.00) }
+                                    var a by remember { mutableDoubleStateOf(0.00) }
+                                    var tText by remember { mutableStateOf("") }
+                                    var t = tText.toDoubleOrNull() ?: 0.0
+                                    Column(
+                                        modifier = Modifier
+                                            .padding(5.dp)
+                                            .fillMaxSize()
+                                            .background(MaterialTheme.colorScheme.primaryContainer),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        Text(
+                                            "Simple Interest Calculator",
+                                            fontSize = 20.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                                        )
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        HorizontalDivider()
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        OutlinedTextField(
+                                            value = pText,
+                                            onValueChange = { pText = it },
+                                            label = { Text("Principal Amount") },
+                                            singleLine = true,
+                                            modifier = Modifier
+                                                .padding(horizontal = 20.dp)
+                                                .fillMaxWidth(),
+                                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+                                        )
+                                        Spacer(modifier = Modifier.height(10.dp))
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(2.dp)
+                                        ) {
+                                            OutlinedTextField(
+                                                value = rText,
+                                                onValueChange = { rText = it },
+                                                label = { Text("Rate of Interest") },
+                                                singleLine = true,
+                                                modifier = Modifier
+                                                    .padding(horizontal = 4.dp)
+                                                    .width(180.dp),
+                                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+                                            )
+                                            Spacer(modifier = Modifier.width(10.dp))
+                                            var expanded by remember { mutableStateOf(false) }
+
+                                            ExposedDropdownMenuBox(
+                                                expanded = expanded,
+                                                onExpandedChange = { expanded = !expanded }
+                                            ) {
+                                                OutlinedTextField(
+                                                    value = rSelectedOptionText,
+                                                    onValueChange = {},
+                                                    readOnly = true,
+                                                    label = { Text("Select Rate type") },
+                                                    trailingIcon = {
+                                                        ExposedDropdownMenuDefaults.TrailingIcon(
+                                                            expanded = expanded
+                                                        )
+                                                    },
+                                                    modifier = Modifier
+                                                        .menuAnchor()
+                                                        .fillMaxWidth()
+                                                )
+
+                                                ExposedDropdownMenu(
+                                                    expanded = expanded,
+                                                    onDismissRequest = { expanded = false }
+                                                ) {
+                                                    rOptions.forEach { selectionOption ->
+                                                        DropdownMenuItem(
+                                                            text = { Text(selectionOption) },
+                                                            onClick = {
+                                                                rSelectedOptionText =
+                                                                    selectionOption
+                                                                expanded = false
+                                                            }
+                                                        )
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        Spacer(modifier = Modifier.height(10.dp))
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(2.dp)
+                                        ) {
+                                            OutlinedTextField(
+                                                value = tText,
+                                                onValueChange = { tText = it },
+                                                label = { Text("Time") },
+                                                singleLine = true,
+                                                modifier = Modifier
+                                                    .padding(horizontal = 4.dp)
+                                                    .width(180.dp),
+                                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+                                            )
+                                            Spacer(modifier = Modifier.width(10.dp))
+                                            var expanded by remember { mutableStateOf(false) }
+
+                                            ExposedDropdownMenuBox(
+                                                expanded = expanded,
+                                                onExpandedChange = { expanded = !expanded }
+                                            ) {
+                                                OutlinedTextField(
+                                                    value = selectedOptionText,
+                                                    onValueChange = {},
+                                                    readOnly = true,
+                                                    label = { Text("Select time type") },
+                                                    trailingIcon = {
+                                                        ExposedDropdownMenuDefaults.TrailingIcon(
+                                                            expanded = expanded
+                                                        )
+                                                    },
+                                                    modifier = Modifier
+                                                        .menuAnchor()
+                                                        .fillMaxWidth()
+                                                )
+
+                                                ExposedDropdownMenu(
+                                                    expanded = expanded,
+                                                    onDismissRequest = { expanded = false }
+                                                ) {
+                                                    options.forEach { selectionOption ->
+                                                        DropdownMenuItem(
+                                                            text = { Text(selectionOption) },
+                                                            onClick = {
+                                                                selectedOptionText = selectionOption
+                                                                expanded = false
+                                                            }
+                                                        )
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        Spacer(modifier = Modifier.height(10.dp))
+                                        Button(
+                                            onClick = {
+                                                try {
+                                                    si = when {
+                                                        rSelectedOptionText == "Per Year" && selectedOptionText == "In Month" -> {
+                                                            (p * r * (t / 12.0)) / 100
+                                                        }
+
+                                                        rSelectedOptionText == "Per Month" && selectedOptionText == "In Year" -> {
+                                                            (p * r * (t * 12.0)) / 100
+                                                        }
+
+                                                        rSelectedOptionText == "Per Month" && selectedOptionText == "In Month" -> {
+                                                            (p * r * t) / 100
+                                                        }
+
+                                                        rSelectedOptionText == "Per Year" && selectedOptionText == "In Year" -> {
+                                                            (p * r * t) / 100
+                                                        }
+
+                                                        else -> 0.0 // fallback in case of invalid input
+                                                    }
+                                                    si =
+                                                        BigDecimal(si).setScale(
+                                                            4,
+                                                            RoundingMode.HALF_UP
+                                                        )
+                                                            .toDouble()
+                                                    a = p + si
+                                                    // vibart the phone
+                                                    if (isVibrt) {
+                                                        if (Build.VERSION.SDK_INT <= 26) {
+                                                            vibrator.vibrate(100)
+                                                        } else {
+                                                            vibrator.vibrate(
+                                                                VibrationEffect.createOneShot(
+                                                                    100,
+                                                                    VibrationEffect.DEFAULT_AMPLITUDE
+                                                                )
+                                                            )
+                                                        }
+                                                    }
+                                                } catch (ex: Exception) {
+                                                    scope.launch {
+                                                        snackbarHostState.showSnackbar(
+                                                            "Error :- ${ex.message}",
+                                                            withDismissAction = true,
+                                                            duration = SnackbarDuration.Short
+                                                        )
+                                                    }
+                                                }
+                                            },
+                                            modifier = Modifier
+                                                .padding(horizontal = 8.dp)
+                                                .fillMaxWidth()
+                                        ) {
+                                            Text("Calculate")
+                                        }
+                                        Spacer(modifier = Modifier.height(10.dp))
+                                        Column(
+                                            modifier = Modifier
+                                                .padding(horizontal = 8.dp)
+                                                .fillMaxWidth()
+                                                .height(50.dp)
+                                                .shadow(
+                                                    elevation = 1.dp,
+                                                    shape = RoundedCornerShape(10.dp)
+                                                )
+                                                .background(MaterialTheme.colorScheme.onSecondaryContainer),
+                                            verticalArrangement = Arrangement.Center,
+                                            horizontalAlignment = Alignment.CenterHorizontally
+                                        ) {
+                                            Text(
+                                                "Simple Interest = $si",
+                                                color = MaterialTheme.colorScheme.secondaryContainer,
+                                                fontSize = 15.sp,
+                                                fontWeight = FontWeight.SemiBold
+                                            )
+                                            Spacer(modifier = Modifier.height(5.dp))
+                                            Text(
+                                                "Total Amount = $a",
+                                                color = MaterialTheme.colorScheme.secondaryContainer,
+                                                fontSize = 15.sp,
+                                                fontWeight = FontWeight.SemiBold
+                                            )
+                                        }
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                    }
+                                }
+                            }
+
+                            "Principle Amount Calculator" -> {
+                                Card {
+                                    Column(
+                                        modifier = Modifier
+                                            .padding(5.dp)
+                                            .fillMaxWidth()
+                                            .background(MaterialTheme.colorScheme.primaryContainer),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        var iText by remember { mutableStateOf("") }
+                                        var i = iText.toDoubleOrNull() ?: 0.0
+                                        var rText by remember { mutableStateOf("") }
+                                        var r = rText.toDoubleOrNull() ?: 0.0
+                                        var tText by remember { mutableStateOf("") }
+                                        var t = tText.toDoubleOrNull() ?: 0.0
+                                        var p by remember { mutableDoubleStateOf(0.00) }
+                                        val options = listOf("In Year", "In Month")
+                                        var selectedOptionText by remember { mutableStateOf(options[0]) }
+                                        val rOptions = listOf("Per Year", "Per Month")
+                                        var rSelectedOptionText by remember {
+                                            mutableStateOf(
+                                                rOptions[0]
+                                            )
+                                        }
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        Text(
+                                            "Get Principle Amount",
+                                            fontSize = 20.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                                        )
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        HorizontalDivider()
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        OutlinedTextField(
+                                            value = iText,
+                                            onValueChange = { iText = it },
+                                            label = { Text("Interest") },
+                                            singleLine = true,
+                                            modifier = Modifier
+                                                .padding(horizontal = 20.dp)
+                                                .fillMaxWidth(),
+                                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+                                        )
+                                        Spacer(modifier = Modifier.height(10.dp))
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(2.dp)
+                                        ) {
+                                            OutlinedTextField(
+                                                value = rText,
+                                                onValueChange = { rText = it },
+                                                label = { Text("Rate of Interest") },
+                                                singleLine = true,
+                                                modifier = Modifier
+                                                    .padding(horizontal = 4.dp)
+                                                    .width(180.dp),
+                                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+                                            )
+                                            Spacer(modifier = Modifier.width(10.dp))
+                                            var expanded by remember { mutableStateOf(false) }
+
+                                            ExposedDropdownMenuBox(
+                                                expanded = expanded,
+                                                onExpandedChange = { expanded = !expanded }
+                                            ) {
+                                                OutlinedTextField(
+                                                    value = rSelectedOptionText,
+                                                    onValueChange = {},
+                                                    readOnly = true,
+                                                    label = { Text("Select Rate type") },
+                                                    trailingIcon = {
+                                                        ExposedDropdownMenuDefaults.TrailingIcon(
+                                                            expanded = expanded
+                                                        )
+                                                    },
+                                                    modifier = Modifier
+                                                        .menuAnchor()
+                                                        .fillMaxWidth()
+                                                )
+
+                                                ExposedDropdownMenu(
+                                                    expanded = expanded,
+                                                    onDismissRequest = { expanded = false }
+                                                ) {
+                                                    rOptions.forEach { selectionOption ->
+                                                        DropdownMenuItem(
+                                                            text = { Text(selectionOption) },
+                                                            onClick = {
+                                                                rSelectedOptionText =
+                                                                    selectionOption
+                                                                expanded = false
+                                                            }
+                                                        )
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        Spacer(modifier = Modifier.height(10.dp))
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(2.dp)
+                                        ) {
+                                            OutlinedTextField(
+                                                value = tText,
+                                                onValueChange = { tText = it },
+                                                label = { Text("Time") },
+                                                singleLine = true,
+                                                modifier = Modifier
+                                                    .padding(horizontal = 4.dp)
+                                                    .width(180.dp),
+                                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+                                            )
+                                            Spacer(modifier = Modifier.width(10.dp))
+                                            var expanded by remember { mutableStateOf(false) }
+
+                                            ExposedDropdownMenuBox(
+                                                expanded = expanded,
+                                                onExpandedChange = { expanded = !expanded }
+                                            ) {
+                                                OutlinedTextField(
+                                                    value = selectedOptionText,
+                                                    onValueChange = {},
+                                                    readOnly = true,
+                                                    label = { Text("Select time type") },
+                                                    trailingIcon = {
+                                                        ExposedDropdownMenuDefaults.TrailingIcon(
+                                                            expanded = expanded
+                                                        )
+                                                    },
+                                                    modifier = Modifier
+                                                        .menuAnchor()
+                                                        .fillMaxWidth()
+                                                )
+
+                                                ExposedDropdownMenu(
+                                                    expanded = expanded,
+                                                    onDismissRequest = { expanded = false }
+                                                ) {
+                                                    options.forEach { selectionOption ->
+                                                        DropdownMenuItem(
+                                                            text = { Text(selectionOption) },
+                                                            onClick = {
+                                                                selectedOptionText = selectionOption
+                                                                expanded = false
+                                                            }
+                                                        )
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        Spacer(modifier = Modifier.height(10.dp))
+                                        Button(
+                                            onClick = {
+                                                try {
+                                                    p = when {
+                                                        rSelectedOptionText == "Per Year" && selectedOptionText == "In Month" -> {
+                                                            ((i * 100.0) / (r * (t / 12.0)))
+                                                        }
+
+                                                        rSelectedOptionText == "Per Month" && selectedOptionText == "In Year" -> {
+                                                            ((i * 100.0) / (r * (t * 12.0)))
+                                                        }
+
+                                                        rSelectedOptionText == "Per Month" && selectedOptionText == "In Month" -> {
+                                                            ((i * 100.0) / (r * t))
+                                                        }
+
+                                                        rSelectedOptionText == "Per Year" && selectedOptionText == "In Year" -> {
+                                                            ((i * 100.0) / (r * t))
+                                                        }
+
+                                                        else -> 0.0 // fallback in case of invalid input
+                                                    }
+                                                    p = BigDecimal(p).setScale(
+                                                        4,
+                                                        RoundingMode.HALF_UP
+                                                    )
+                                                        .toDouble()
+                                                    if (isVibrt) {
+                                                        if (Build.VERSION.SDK_INT <= 26) {
+                                                            vibrator.vibrate(100)
+                                                        } else {
+                                                            vibrator.vibrate(
+                                                                VibrationEffect.createOneShot(
+                                                                    100,
+                                                                    VibrationEffect.DEFAULT_AMPLITUDE
+                                                                )
+                                                            )
+                                                        }
+                                                    }
+                                                } catch (ex: Exception) {
+                                                    scope.launch {
+                                                        snackbarHostState.showSnackbar(
+                                                            "Error :- ${ex.message}",
+                                                            withDismissAction = true,
+                                                            duration = SnackbarDuration.Short
+                                                        )
+                                                        if (isVibrt) {
+                                                            if (Build.VERSION.SDK_INT <= 26) {
+                                                                vibrator.vibrate(100)
+                                                            } else {
+                                                                vibrator.vibrate(
+                                                                    VibrationEffect.createOneShot(
+                                                                        100,
+                                                                        VibrationEffect.DEFAULT_AMPLITUDE
+                                                                    )
+                                                                )
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            modifier = Modifier
+                                                .padding(horizontal = 8.dp)
+                                                .fillMaxWidth()
+                                        ) { Text("Calculate") }
+                                        Spacer(modifier = Modifier.height(10.dp))
+                                        Box(
+                                            modifier = Modifier
+                                                .padding(horizontal = 8.dp)
+                                                .fillMaxWidth()
+                                                .height(50.dp)
+                                                .shadow(
+                                                    elevation = 1.dp,
+                                                    shape = RoundedCornerShape(10.dp)
+                                                )
+                                                .background(MaterialTheme.colorScheme.onSecondaryContainer)
+                                        ) {
+                                            Text(
+                                                "Principle Amount = $p",
+                                                color = MaterialTheme.colorScheme.secondaryContainer,
+                                                fontSize = 15.sp,
+                                                fontWeight = FontWeight.SemiBold,
+                                                modifier = Modifier.align(Alignment.Center)
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
+                            "Rate of Interest Calculator" -> {
+                                Card {
+                                    Column(
+                                        modifier = Modifier
+                                            .padding(5.dp)
+                                            .fillMaxWidth()
+                                            .background(MaterialTheme.colorScheme.primaryContainer),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        var iText by remember { mutableStateOf("") }
+                                        var i = iText.toDoubleOrNull() ?: 0.0
+                                        var pText by remember { mutableStateOf("") }
+                                        var p = pText.toDoubleOrNull() ?: 0.0
+                                        var r by remember { mutableDoubleStateOf(0.0) }
+                                        var tText by remember { mutableStateOf("") }
+                                        var t = tText.toDoubleOrNull() ?: 0.0
+                                        val options = listOf("In Year", "In Month")
+                                        var selectedOptionText by remember { mutableStateOf(options[0]) }
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        Text(
+                                            "Get Rate of Interest", fontSize = 20.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                                        )
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        HorizontalDivider()
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        OutlinedTextField(
+                                            value = iText,
+                                            onValueChange = { iText = it },
+                                            label = { Text("Interest") },
+                                            singleLine = true,
+                                            modifier = Modifier
+                                                .padding(horizontal = 20.dp)
+                                                .fillMaxWidth(),
+                                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+                                        )
+                                        Spacer(modifier = Modifier.height(10.dp))
+                                        OutlinedTextField(
+                                            value = pText,
+                                            onValueChange = { pText = it },
+                                            label = { Text("Principle Amount") },
+                                            singleLine = true,
+                                            modifier = Modifier
+                                                .padding(horizontal = 20.dp)
+                                                .fillMaxWidth(),
+                                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+                                        )
+                                        Spacer(modifier = Modifier.height(10.dp))
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(2.dp)
+                                        ) {
+                                            OutlinedTextField(
+                                                value = tText,
+                                                onValueChange = { tText = it },
+                                                label = { Text("Time") },
+                                                singleLine = true,
+                                                modifier = Modifier
+                                                    .padding(horizontal = 4.dp)
+                                                    .width(180.dp),
+                                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+                                            )
+                                            Spacer(modifier = Modifier.width(10.dp))
+                                            var expanded by remember { mutableStateOf(false) }
+
+                                            ExposedDropdownMenuBox(
+                                                expanded = expanded,
+                                                onExpandedChange = { expanded = !expanded }
+                                            ) {
+                                                OutlinedTextField(
+                                                    value = selectedOptionText,
+                                                    onValueChange = {},
+                                                    readOnly = true,
+                                                    label = { Text("Select time type") },
+                                                    trailingIcon = {
+                                                        ExposedDropdownMenuDefaults.TrailingIcon(
+                                                            expanded = expanded
+                                                        )
+                                                    },
+                                                    modifier = Modifier
+                                                        .menuAnchor()
+                                                        .fillMaxWidth()
+                                                )
+
+                                                ExposedDropdownMenu(
+                                                    expanded = expanded,
+                                                    onDismissRequest = { expanded = false }
+                                                ) {
+                                                    options.forEach { selectionOption ->
+                                                        DropdownMenuItem(
+                                                            text = { Text(selectionOption) },
+                                                            onClick = {
+                                                                selectedOptionText = selectionOption
+                                                                expanded = false
+                                                            }
+                                                        )
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        Button(
+                                            onClick = {
+                                                try {
+                                                    r = when (selectedOptionText) {
+                                                        "In Month" -> {
+                                                            i * 100.0 / (p * (t / 12.0))
+                                                        }
+
+                                                        "In Year" -> {
+                                                            i * 100.0 / (p * t)
+                                                        }
+
+                                                        else -> 0.0
+                                                    }
+                                                } catch (ex: Exception) {
+                                                    scope.launch {
+                                                        snackbarHostState.showSnackbar(
+                                                            "Error :- ${ex.message}",
+                                                            withDismissAction = true,
+                                                            duration = SnackbarDuration.Short
+                                                        )
+                                                    }
+                                                }
+                                                if (isVibrt) {
+                                                    if (Build.VERSION.SDK_INT <= 26) {
+                                                        vibrator.vibrate(100)
+                                                    } else {
+                                                        vibrator.vibrate(
+                                                            VibrationEffect.createOneShot(
+                                                                100,
+                                                                VibrationEffect.DEFAULT_AMPLITUDE
+                                                            )
+                                                        )
+                                                    }
+                                                }
+                                            },
+                                            modifier = Modifier
+                                                .padding(horizontal = 8.dp)
+                                                .fillMaxWidth()
+                                        ) { Text("Calculate") }
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        Box(
+                                            modifier = Modifier
+                                                .padding(horizontal = 8.dp)
+                                                .fillMaxWidth()
+                                                .height(50.dp)
+                                                .shadow(
+                                                    elevation = 1.dp,
+                                                    shape = RoundedCornerShape(10.dp)
+                                                )
+                                                .background(MaterialTheme.colorScheme.onSecondaryContainer)
+                                        ) {
+                                            Text(
+                                                "Rate = $r%",
+                                                color = MaterialTheme.colorScheme.secondaryContainer,
+                                                fontSize = 15.sp,
+                                                fontWeight = FontWeight.SemiBold,
+                                                modifier = Modifier.align(Alignment.Center)
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
+                            "Time of Interest Calculator" -> {
+                                Card {
+                                    Column(
+                                        modifier = Modifier
+                                            .padding(5.dp)
+                                            .fillMaxWidth()
+                                            .background(MaterialTheme.colorScheme.primaryContainer),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        var iText by remember { mutableStateOf("") }
+                                        var i = iText.toDoubleOrNull() ?: 0.0
+                                        var pText by remember { mutableStateOf("") }
+                                        var p = pText.toDoubleOrNull() ?: 0.0
+                                        val rOptions = listOf("Per Year", "Per Month")
+                                        var rSelectedOptionText by remember {
+                                            mutableStateOf(
+                                                rOptions[0]
+                                            )
+                                        }
+                                        var rText by remember { mutableStateOf("") }
+                                        var r = rText.toDoubleOrNull() ?: 0.0
+                                        var t by remember { mutableDoubleStateOf(0.0) }
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        Text(
+                                            text = "Get Time of Interest",
+                                            fontSize = 20.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                                        )
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        HorizontalDivider()
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        OutlinedTextField(
+                                            value = iText,
+                                            singleLine = true,
+                                            onValueChange = { iText = it },
+                                            modifier = Modifier
+                                                .padding(horizontal = 20.dp)
+                                                .fillMaxWidth(),
+                                            label = { Text("Interest") },
+                                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+                                        )
+                                        Spacer(modifier = Modifier.height(10.dp))
+                                        OutlinedTextField(
+                                            value = pText,
+                                            singleLine = true,
+                                            onValueChange = { pText = it },
+                                            modifier = Modifier
+                                                .padding(horizontal = 20.dp)
+                                                .fillMaxWidth(),
+                                            label = { Text("Principle Amount") },
+                                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+                                        )
+                                        Spacer(modifier = Modifier.height(10.dp))
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(2.dp)
+                                        ) {
+                                            OutlinedTextField(
+                                                value = rText,
+                                                onValueChange = { rText = it },
+                                                label = { Text("Rate of Interest") },
+                                                singleLine = true,
+                                                modifier = Modifier
+                                                    .padding(horizontal = 4.dp)
+                                                    .width(180.dp),
+                                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+                                            )
+                                            Spacer(modifier = Modifier.width(10.dp))
+                                            var expanded by remember { mutableStateOf(false) }
+
+                                            ExposedDropdownMenuBox(
+                                                expanded = expanded,
+                                                onExpandedChange = { expanded = !expanded }
+                                            ) {
+                                                OutlinedTextField(
+                                                    value = rSelectedOptionText,
+                                                    onValueChange = {},
+                                                    readOnly = true,
+                                                    label = { Text("Select Rate type") },
+                                                    trailingIcon = {
+                                                        ExposedDropdownMenuDefaults.TrailingIcon(
+                                                            expanded = expanded
+                                                        )
+                                                    },
+                                                    modifier = Modifier
+                                                        .menuAnchor()
+                                                        .fillMaxWidth()
+                                                )
+
+                                                ExposedDropdownMenu(
+                                                    expanded = expanded,
+                                                    onDismissRequest = { expanded = false }
+                                                ) {
+                                                    rOptions.forEach { selectionOption ->
+                                                        DropdownMenuItem(
+                                                            text = { Text(selectionOption) },
+                                                            onClick = {
+                                                                rSelectedOptionText =
+                                                                    selectionOption
+                                                                expanded = false
+                                                            }
+                                                        )
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        Button(
+                                            onClick = {
+                                                try {
+                                                    t = when (rSelectedOptionText) {
+                                                        "Per Year" -> {
+                                                            i * 100 / (p * r)
+                                                        }
+
+                                                        "Per Month" -> {
+                                                            i * 100 / (p * r * 12.0)
+                                                        }
+
+                                                        else -> 0.0
+                                                    }
+                                                } catch (ex: Exception) {
+                                                    scope.launch {
+                                                        snackbarHostState.showSnackbar(
+                                                            "Error :- ${ex.message}",
+                                                            withDismissAction = true,
+                                                            duration = SnackbarDuration.Short
+                                                        )
+                                                    }
+                                                }
+                                                if (isVibrt) {
+                                                    if (Build.VERSION.SDK_INT <= 26) {
+                                                        vibrator.vibrate(100)
+                                                    } else {
+                                                        vibrator.vibrate(
+                                                            VibrationEffect.createOneShot(
+                                                                100,
+                                                                VibrationEffect.DEFAULT_AMPLITUDE
+                                                            )
+                                                        )
+                                                    }
+                                                }
+                                            },
+                                            modifier = Modifier
+                                                .padding(horizontal = 8.dp)
+                                                .fillMaxWidth()
+                                        ) { Text("Calculate") }
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        Box(
+                                            modifier = Modifier
+                                                .padding(horizontal = 8.dp)
+                                                .shadow(
+                                                    elevation = 1.dp,
+                                                    shape = RoundedCornerShape(10.dp)
+                                                )
+                                                .background(
+                                                    MaterialTheme.colorScheme.onSecondaryContainer
+                                                )
+                                                .fillMaxWidth()
+                                                .height(50.dp)
+                                        ) {
+                                            Text(
+                                                "Time = $t",
+                                                modifier = Modifier.align(Alignment.Center),
+                                                fontSize = 15.sp,
+                                                fontWeight = FontWeight.SemiBold,
+                                                color = MaterialTheme.colorScheme.secondaryContainer
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
+                            "Average Calculator" -> {
+                                Card {
+                                    Column(
+                                        modifier = Modifier
+                                            .padding(5.dp)
+                                            .fillMaxWidth()
+                                            .background(
+                                                MaterialTheme.colorScheme.primaryContainer
+                                            ), horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        var numItem by remember { mutableIntStateOf(0) }
+                                        var chcknum by remember { mutableStateOf(false) }
+                                        var isOnItems by remember { mutableStateOf(false) }
+                                        var average by remember { mutableDoubleStateOf(0.00) }
+                                        var items by remember { mutableStateOf(mutableListOf<Double>()) }
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        Text(
+                                            "Get Average",
+                                            fontSize = 20.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                                        )
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        HorizontalDivider()
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        OutlinedTextField(
+                                            value = if (numItem == 0) "" else numItem.toString(),
+                                            onValueChange = { numItem = it.toIntOrNull() ?: 0 },
+                                            label = { Text("How many Number of Items") },
+                                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                            modifier = Modifier
+                                                .padding(horizontal = 20.dp)
+                                                .fillMaxWidth()
+                                        )
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        Button(
+                                            onClick = {
+                                                items = List(numItem) { 0.00 }.toMutableList()
+                                                // animated scroll to bottom
+                                                isBottomScroll = true
+                                                //on the chcknum
+                                                if (numItem < 1) {
+                                                    chcknum = true
+                                                } else {
+                                                    chcknum = false
+                                                    isOnItems = true
+                                                    numItem = 0
+                                                }
+
+                                            },
+                                            modifier = Modifier
+                                                .padding(horizontal = 20.dp)
+                                                .fillMaxWidth()
+                                        ) { Text("Add ${if (numItem < 2) "Item" else "Items"}") }
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        if (!chcknum) {
+                                            if (isOnItems) {
+                                                LazyColumn(
+                                                    modifier = Modifier
+                                                        .padding(vertical = 3.dp, horizontal = 5.dp)
+                                                        .height(125.dp)
+                                                        .fillMaxWidth()
+                                                ) {
+                                                    itemsIndexed(items) { index, item ->
+                                                        val imeAction =
+                                                            if (index < items.lastIndex) ImeAction.Next else ImeAction.Done
+
+                                                        OutlinedTextField(
+                                                            value = if (item == 0.00) "" else item.toString(),
+                                                            onValueChange = { newValue ->
+                                                                val parsedValue =
+                                                                    newValue.toDoubleOrNull()
+                                                                if (parsedValue != null) {
+                                                                    items = items.toMutableList()
+                                                                        .apply {
+                                                                            this[index] =
+                                                                                parsedValue
+                                                                        }
+                                                                }
+                                                            },
+                                                            modifier = Modifier
+                                                                .padding(horizontal = 5.dp)
+                                                                .fillMaxWidth(),
+                                                            keyboardOptions = KeyboardOptions.Default.copy(
+                                                                keyboardType = KeyboardType.Decimal,
+                                                                imeAction = imeAction
+                                                            ),
+                                                            label = { Text("Item ${index + 1}") }
+                                                        )
+                                                    }
+                                                }
+                                                Spacer(modifier = Modifier.height(2.dp))
+                                                Text(
+                                                    "^ ^ ^ This is scrollable ^ ^ ^",
+                                                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                                                )
+                                                Spacer(modifier = Modifier.height(5.dp))
+                                                Button(
+                                                    onClick = {
+                                                        //todo : main average function
+                                                        //sun of all digits in the list
+                                                        average = items.sum()
+                                                        //divide the sum by the number of items
+                                                        average /= items.size
+                                                        //todo : done !!!
+
+                                                        //todo vibrate
+                                                        if (isVibrt) {
+                                                            if (Build.VERSION.SDK_INT <= 26) {
+                                                                vibrator.vibrate(100)
+                                                            } else {
+                                                                vibrator.vibrate(
+                                                                    VibrationEffect.createOneShot(
+                                                                        100,
+                                                                        VibrationEffect.DEFAULT_AMPLITUDE
+                                                                    )
+                                                                )
+                                                            }
+                                                        }
+                                                    },
+                                                    modifier = Modifier
+                                                        .padding(8.dp)
+                                                        .fillMaxWidth()
+                                                ) { Text("Calculate") }
+                                                Spacer(modifier = Modifier.height(5.dp))
+                                                Box(
+                                                    modifier = Modifier
+                                                        .padding(horizontal = 8.dp)
+                                                        .shadow(
+                                                            elevation = 1.dp,
+                                                            shape = RoundedCornerShape(8.dp)
+                                                        )
+                                                        .background(MaterialTheme.colorScheme.onSecondaryContainer)
+                                                        .fillMaxWidth()
+                                                        .height(50.dp)
+                                                ) {
+                                                    Text(
+                                                        "Average = $average",
+                                                        color = MaterialTheme.colorScheme.secondaryContainer,
+                                                        fontSize = 15.sp,
+                                                        fontWeight = FontWeight.SemiBold,
+                                                        modifier = Modifier.align(Alignment.Center)
+                                                    )
+                                                }
+                                            }
+                                        } else {
+                                            LaunchedEffect(Unit) {
+                                                scope.launch {
+                                                    snackbarHostState.showSnackbar(
+                                                        "You can't add item (s) without enter number of item !",
+                                                        withDismissAction = true
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            "Square Area Calculator" -> {
+                                Card {
+                                    var sideText by remember { mutableStateOf("") }
+                                    var side = sideText.toDoubleOrNull() ?: 0.0
+                                    var area by remember { mutableDoubleStateOf(0.0) }
+                                    Column(
+                                        modifier = Modifier
+                                            .padding(5.dp)
+                                            .fillMaxWidth()
+                                            .background(MaterialTheme.colorScheme.primaryContainer),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Text(
+                                            "Get Area Of Square",
+                                            fontSize = 20.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                                        )
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        HorizontalDivider()
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        OutlinedTextField(
+                                            value = sideText,
+                                            onValueChange = { sideText = it },
+                                            label = { Text("Side") },
+                                            singleLine = true,
+                                            modifier = Modifier
+                                                .padding(horizontal = 20.dp)
+                                                .fillMaxWidth(),
+                                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+                                        )
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        Row(
+                                            modifier = Modifier
+                                                .padding(horizontal = 8.dp)
+                                                .fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.Start,
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Text(
+                                                "Note :- All Side Must Be Same",
+                                                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                                fontSize = 15.sp,
+                                                fontWeight = FontWeight.Medium
+                                            )
+                                        }
+
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        Button(
+                                            onClick = {
+                                                area = side.pow(2)
+                                                //not use area = side * side , simply use pow() it mean side^2 (area = side power of 2)
+                                                //todo vibrate
+                                                if (isVibrt) {
+                                                    if (Build.VERSION.SDK_INT <= 26) {
+                                                        vibrator.vibrate(100)
+                                                    } else {
+                                                        vibrator.vibrate(
+                                                            VibrationEffect.createOneShot(
+                                                                100,
+                                                                VibrationEffect.DEFAULT_AMPLITUDE
+                                                            )
+                                                        )
+                                                    }
+                                                }
+                                            }, modifier = Modifier
+                                                .padding(horizontal = 8.dp)
+                                                .fillMaxWidth()
+                                        ) { Text("Calculate") }
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        Box(
+                                            modifier = Modifier
+                                                .padding(horizontal = 8.dp)
+                                                .fillMaxWidth()
+                                                .height(50.dp)
+                                                .shadow(
+                                                    elevation = 1.dp,
+                                                    shape = RoundedCornerShape(10.dp)
+                                                )
+                                                .background(MaterialTheme.colorScheme.onSecondaryContainer)
+                                        ) {
+                                            Text(
+                                                "Area Of Square = $area²",
+                                                color = MaterialTheme.colorScheme.secondaryContainer,
+                                                fontSize = 15.sp,
+                                                fontWeight = FontWeight.SemiBold,
+                                                modifier = Modifier.align(Alignment.Center)
+                                            )
+                                        }
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                    }
+                                }
+                            }
+
+                            "Rectangle Area Calculator" -> {
+                                Card {
+                                    var bText by remember { mutableStateOf("") }
+                                    var b = bText.toDoubleOrNull() ?: 0.0
+                                    var lText by remember { mutableStateOf("") }
+                                    var l = lText.toDoubleOrNull() ?: 0.0
+                                    var area by remember { mutableDoubleStateOf(0.0) }
+                                    Column(
+                                        modifier = Modifier
+                                            .padding(5.dp)
+                                            .background(
+                                                MaterialTheme.colorScheme.primaryContainer
+                                            )
+                                            .fillMaxWidth(),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        Text(
+                                            "Get Area Of Rectangle",
+                                            fontSize = 20.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                                        )
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        HorizontalDivider()
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        OutlinedTextField(
+                                            value = lText,
+                                            onValueChange = { lText = it },
+                                            label = { Text("Length") },
+                                            singleLine = true,
+                                            modifier = Modifier
+                                                .padding(horizontal = 20.dp)
+                                                .fillMaxWidth(),
+                                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+                                        )
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        OutlinedTextField(
+                                            value = bText,
+                                            onValueChange = { bText = it },
+                                            label = { Text("Breadth") },
+                                            singleLine = true,
+                                            modifier = Modifier
+                                                .padding(horizontal = 20.dp)
+                                                .fillMaxWidth(),
+                                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+                                        )
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        Button(
+                                            onClick = {
+                                                area = l * b
+                                                //todo vibrate
+                                                if (isVibrt) {
+                                                    if (Build.VERSION.SDK_INT <= 26) {
+                                                        vibrator.vibrate(100)
+                                                    } else {
+                                                        vibrator.vibrate(
+                                                            VibrationEffect.createOneShot(
+                                                                100,
+                                                                VibrationEffect.DEFAULT_AMPLITUDE
+                                                            )
+                                                        )
+                                                    }
+                                                }
+                                            },
+                                            modifier = Modifier
+                                                .padding(horizontal = 8.dp)
+                                                .fillMaxWidth()
+                                        ) { Text("Calculate") }
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        Box(
+                                            modifier = Modifier
+                                                .padding(horizontal = 8.dp)
+                                                .fillMaxWidth()
+                                                .height(50.dp)
+                                                .shadow(
+                                                    elevation = 1.dp,
+                                                    shape = RoundedCornerShape(10.dp)
+                                                )
+                                                .background(MaterialTheme.colorScheme.onSecondaryContainer)
+                                        ) {
+                                            Text(
+                                                "Area Of Rectangle = $area²",
+                                                color = MaterialTheme.colorScheme.secondaryContainer,
+                                                fontSize = 15.sp,
+                                                fontWeight = FontWeight.SemiBold,
+                                                modifier = Modifier.align(Alignment.Center)
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
+                            "Circle Area Calculator" -> {
+                                Card {
+                                    var rText by remember { mutableStateOf("") }
+                                    var r = rText.toDoubleOrNull() ?: 0.0
+                                    var area by remember { mutableDoubleStateOf(0.0) }
+                                    Column(
+                                        modifier = Modifier
+                                            .padding(5.dp)
+                                            .background(
+                                                MaterialTheme.colorScheme.primaryContainer
+                                            )
+                                            .fillMaxWidth(),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        Text(
+                                            "Get Area Of Circle",
+                                            fontSize = 20.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                                        )
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        HorizontalDivider()
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        OutlinedTextField(
+                                            value = rText,
+                                            onValueChange = { rText = it },
+                                            label = { Text("Radius") },
+                                            singleLine = true,
+                                            modifier = Modifier
+                                                .padding(horizontal = 20.dp)
+                                                .fillMaxWidth(),
+                                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+                                        )
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        Button(
+                                            onClick = {
+                                                area = PI * r.pow(2)
+                                                //todo vibrate
+                                                if (isVibrt) {
+                                                    if (Build.VERSION.SDK_INT <= 26) {
+                                                        vibrator.vibrate(100)
+                                                    } else {
+                                                        vibrator.vibrate(
+                                                            VibrationEffect.createOneShot(
+                                                                100,
+                                                                VibrationEffect.DEFAULT_AMPLITUDE
+                                                            )
+                                                        )
+                                                    }
+                                                }
+                                            },
+                                            modifier = Modifier
+                                                .padding(horizontal = 8.dp)
+                                                .fillMaxWidth()
+                                        ) { Text("Calculate") }
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        Box(
+                                            modifier = Modifier
+                                                .padding(horizontal = 8.dp)
+                                                .fillMaxWidth()
+                                                .height(50.dp)
+                                                .shadow(
+                                                    elevation = 1.dp,
+                                                    shape = RoundedCornerShape(10.dp)
+                                                )
+                                                .background(MaterialTheme.colorScheme.onSecondaryContainer)
+
+                                        ) {
+                                            Text(
+                                                "Area Of Circle = $area²",
+                                                color = MaterialTheme.colorScheme.secondaryContainer,
+                                                fontSize = 15.sp,
+                                                fontWeight = FontWeight.SemiBold,
+                                                modifier = Modifier.align(Alignment.Center)
+                                            )
+                                        }
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                    }
+                                }
+                            }
+
+                            "Cube Volume Calculator" -> {
+                                Card {
+                                    var sideText by remember { mutableStateOf("") }
+                                    var side = sideText.toDoubleOrNull() ?: 0.0
+                                    var volume by remember { mutableDoubleStateOf(0.0) }
+                                    Column(
+                                        modifier = Modifier
+                                            .padding(5.dp)
+                                            .background(
+                                                MaterialTheme.colorScheme.primaryContainer
+                                            )
+                                            .fillMaxWidth(),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        Text(
+                                            "Get Volume Of Cube",
+                                            fontSize = 20.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                                        )
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        HorizontalDivider()
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        OutlinedTextField(
+                                            value = sideText,
+                                            onValueChange = { sideText = it },
+                                            label = { Text("Side") },
+                                            singleLine = true,
+                                            modifier = Modifier
+                                                .padding(horizontal = 20.dp)
+                                                .fillMaxWidth(),
+                                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+                                        )
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        Box(
+                                            modifier = Modifier
+                                                .padding(horizontal = 8.dp)
+                                                .fillMaxWidth()
+                                        ) {
+                                            Text(
+                                                "Note :- All Side Must Be Same",
+                                                modifier = Modifier.align(Alignment.CenterStart),
+                                                fontSize = 15.sp,
+                                                fontWeight = FontWeight.Medium
+                                            )
+                                        }
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        Button(
+                                            onClick = {
+                                                //todo : main area function
+                                                volume = side.pow(3)
+                                                //not use area = side * side * side , simply use pow() it mean side^3 (area = side power of 3)
+                                                //todo vibrate
+                                                if (isVibrt) {
+                                                    if (Build.VERSION.SDK_INT <= 26) {
+                                                        vibrator.vibrate(100)
+                                                    } else {
+                                                        vibrator.vibrate(
+                                                            VibrationEffect.createOneShot(
+                                                                100,
+                                                                VibrationEffect.DEFAULT_AMPLITUDE
+                                                            )
+                                                        )
+                                                    }
+                                                }
+                                            },
+                                            modifier = Modifier
+                                                .padding(horizontal = 8.dp)
+                                                .fillMaxWidth()
+                                        ) { Text("Calculate") }
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        Box(
+                                            modifier = Modifier
+                                                .padding(horizontal = 8.dp)
+                                                .fillMaxWidth()
+                                                .height(50.dp)
+                                                .shadow(
+                                                    elevation = 1.dp,
+                                                    shape = RoundedCornerShape(10.dp)
+                                                )
+                                                .background(MaterialTheme.colorScheme.onSecondaryContainer)
+                                        ) {
+                                            Text(
+                                                "Volume Of Cube = $volume³",
+                                                fontSize = 15.sp,
+                                                fontWeight = FontWeight.SemiBold,
+                                                color = MaterialTheme.colorScheme.secondaryContainer,
+                                                modifier = Modifier.align(Alignment.Center)
+                                            )
+                                        }
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                    }
+                                }
+                            }
+
+                            "Cuboid Volume Calculator" -> {
+                                Card {
+                                    var lText by remember { mutableStateOf("") }
+                                    var l = lText.toDoubleOrNull() ?: 0.0
+                                    var bText by remember { mutableStateOf("") }
+                                    var b = bText.toDoubleOrNull() ?: 0.0
+                                    var hText by remember { mutableStateOf("") }
+                                    var h = hText.toDoubleOrNull() ?: 0.0
+                                    var volume by remember { mutableDoubleStateOf(0.0) }
+                                    Column(
+                                        modifier = Modifier
+                                            .padding(5.dp)
+                                            .background(
+                                                MaterialTheme.colorScheme.primaryContainer
+                                            )
+                                            .fillMaxWidth(),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        Text(
+                                            "Get Volume Of Cuboid",
+                                            fontSize = 25.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                                        )
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        HorizontalDivider()
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        OutlinedTextField(
+                                            value = lText,
+                                            onValueChange = { lText = it },
+                                            label = { Text("Length") },
+                                            singleLine = true,
+                                            modifier = Modifier
+                                                .padding(horizontal = 20.dp)
+                                                .fillMaxWidth(),
+                                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+                                        )
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        OutlinedTextField(
+                                            value = bText,
+                                            onValueChange = { bText = it },
+                                            label = { Text("Breadth") },
+                                            singleLine = true,
+                                            modifier = Modifier
+                                                .padding(horizontal = 20.dp)
+                                                .fillMaxWidth(),
+                                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+                                        )
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        OutlinedTextField(
+                                            value = hText,
+                                            onValueChange = { hText = it },
+                                            label = { Text("Height") },
+                                            singleLine = true,
+                                            modifier = Modifier
+                                                .padding(horizontal = 20.dp)
+                                                .fillMaxWidth(),
+                                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+                                        )
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        Button(
+                                            onClick = {
+                                                //todo : main area function
+                                                volume = l * b * h
+                                                //todo vibrate
+                                                if (isVibrt) {
+                                                    if (Build.VERSION.SDK_INT <= 26) {
+                                                        vibrator.vibrate(100)
+                                                    } else {
+                                                        vibrator.vibrate(
+                                                            VibrationEffect.createOneShot(
+                                                                100,
+                                                                VibrationEffect.DEFAULT_AMPLITUDE
+                                                            )
+                                                        )
+                                                    }
+                                                }
+                                            },
+                                            modifier = Modifier
+                                                .padding(horizontal = 8.dp)
+                                                .fillMaxWidth()
+                                        ) { Text("Calculate") }
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        Box(
+                                            modifier = Modifier
+                                                .padding(horizontal = 8.dp)
+                                                .fillMaxWidth()
+                                                .height(50.dp)
+                                                .shadow(
+                                                    elevation = 1.dp,
+                                                    shape = RoundedCornerShape(10.dp)
+                                                )
+                                                .background(MaterialTheme.colorScheme.onSecondaryContainer)
+                                        ) {
+                                            Text(
+                                                "Volume Of Cuboid = $volume³",
+                                                fontSize = 15.sp,
+                                                fontWeight = FontWeight.SemiBold,
+                                                color = MaterialTheme.colorScheme.secondaryContainer,
+                                                modifier = Modifier.align(Alignment.Center)
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
+                            "Cylinder Volume Calculator" -> {
+                                Card {
+                                    var hegText by remember { mutableStateOf("") }
+                                    var rdsText by remember { mutableStateOf("") }
+                                    var volume by remember { mutableDoubleStateOf(0.0) }
+
+                                    fun calcVol() {
+                                        try {
+                                            var height = BigDecimal(hegText.toDoubleOrNull() ?: 0.0)
+                                            var radius = BigDecimal(rdsText.toDoubleOrNull() ?: 0.0)
+                                            val pi = BigDecimal(PI, MathContext.DECIMAL128)
+                                            val res = pi.multiply(radius.pow(2)).multiply(height)
+                                            volume =
+                                                res.setScale(2, RoundingMode.HALF_UP).toDouble()
+                                        } catch (ex: Exception) {
+                                            volume = 000.000
+                                            scope.launch {
+                                                snackbarHostState.showSnackbar(
+                                                    "Invalid Input !, Error Code :- ${ex.message}",
+                                                    withDismissAction = true,
+                                                    duration = SnackbarDuration.Long
+                                                )
+                                            }
+                                            Log.e(
+                                                "DEV LOG",
+                                                "Invalid Input !, Error Code :- ${ex.message} , Full Error Is In Down \n|\n|\n|"
+                                            )
+                                            Log.e("DEV LOG", "Full Error :- $ex")
+                                        }
+
+                                    }
+
+                                    Column(
+                                        modifier = Modifier
+                                            .padding(5.dp)
+                                            .background(MaterialTheme.colorScheme.primaryContainer)
+                                            .fillMaxWidth(),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        Text(
+                                            "Get Volume Of Cylinder",
+                                            fontSize = 20.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                                        )
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        HorizontalDivider()
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        OutlinedTextField(
+                                            value = hegText,
+                                            onValueChange = { hegText = it },
+                                            label = { Text("Height") },
+                                            singleLine = true,
+                                            modifier = Modifier
+                                                .padding(horizontal = 20.dp)
+                                                .fillMaxWidth(),
+                                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+                                        )
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        OutlinedTextField(
+                                            value = rdsText,
+                                            onValueChange = { rdsText = it },
+                                            label = { Text("Radius") },
+                                            singleLine = true,
+                                            modifier = Modifier
+                                                .padding(horizontal = 20.dp)
+                                                .fillMaxWidth(),
+                                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+                                        )
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        Button(
+                                            onClick = {
+                                                //todo : main area function
+                                                calcVol()
+                                                //todo vibrate
+                                                if (isVibrt) {
+                                                    if (Build.VERSION.SDK_INT <= 26) {
+                                                        vibrator.vibrate(100)
+                                                    } else {
+                                                        vibrator.vibrate(
+                                                            VibrationEffect.createOneShot(
+                                                                100,
+                                                                VibrationEffect.DEFAULT_AMPLITUDE
+                                                            )
+                                                        )
+                                                    }
+                                                }
+                                            },
+                                            modifier = Modifier
+                                                .padding(horizontal = 8.dp)
+                                                .fillMaxWidth()
+                                        ) { Text("Calculate") }
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        Box(
+                                            modifier = Modifier
+                                                .padding(horizontal = 8.dp)
+                                                .fillMaxWidth()
+                                                .height(50.dp)
+                                                .shadow(
+                                                    elevation = 1.dp,
+                                                    shape = RoundedCornerShape(10.dp)
+                                                )
+                                                .background(MaterialTheme.colorScheme.onSecondaryContainer)
+                                        ) {
+                                            Text(
+                                                "Volume Of Cylinder = $volume³",
+                                                fontSize = 15.sp,
+                                                fontWeight = FontWeight.SemiBold,
+                                                color = MaterialTheme.colorScheme.secondaryContainer,
+                                                modifier = Modifier.align(Alignment.Center)
+                                            )
+                                        }
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                    }
+                                }
+                            }
+
+                            else -> {
+                                Text(
+                                    " ^ Please Select Calculator Type ^ ",
+                                    fontSize = 20.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onTertiaryContainer
+                                )
+                            }
+                        }
+                    }
                 }
+
                 1 -> {
                     Surface {
                         Column(
@@ -2033,8 +2044,8 @@ class MainActivity : ComponentActivity() {
                                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
                                             )
 
-                                            val fromList = listOf("mm", "cm", "in", "ft","m", "km")
-                                            val toList = listOf("mm", "cm", "in","ft","m", "km")
+                                            val fromList = listOf("mm", "cm", "in", "ft", "m", "km")
+                                            val toList = listOf("mm", "cm", "in", "ft", "m", "km")
                                             var isFrom by remember { mutableStateOf(false) }
                                             var isTo by remember { mutableStateOf(false) }
                                             var fromListOptn by remember { mutableStateOf(fromList[0]) }
@@ -2331,7 +2342,11 @@ class MainActivity : ComponentActivity() {
                                                     tempList[0]
                                                 )
                                             }
-                                            var toTempSelectedOptn by remember { mutableStateOf(tempList[1]) }
+                                            var toTempSelectedOptn by remember {
+                                                mutableStateOf(
+                                                    tempList[1]
+                                                )
+                                            }
 
                                             fun getFullForm(isTo: Boolean): String {
                                                 return if (isTo) {
@@ -2438,7 +2453,8 @@ class MainActivity : ComponentActivity() {
                                                             DropdownMenuItem(
                                                                 text = { Text(selectionOption) },
                                                                 onClick = {
-                                                                    toTempSelectedOptn = selectionOption
+                                                                    toTempSelectedOptn =
+                                                                        selectionOption
                                                                     isTo = false
                                                                 }
                                                             )
@@ -2678,7 +2694,12 @@ class MainActivity : ComponentActivity() {
                                             }
                                             var isBinarySystem by remember { mutableStateOf(true) }
                                             var isDecimalSystem by remember { mutableStateOf(false) }
-                                            var toDataSelectedOptn by remember { mutableStateOf(dataList[3]) }
+                                            var toDataSelectedOptn by remember {
+                                                mutableStateOf(
+                                                    dataList[3]
+                                                )
+                                            }
+
                                             fun getFullForm(isTo: Boolean): String {
                                                 return if (isTo) {
                                                     when (toDataSelectedOptn) {
@@ -2797,7 +2818,8 @@ class MainActivity : ComponentActivity() {
                                                             DropdownMenuItem(
                                                                 text = { Text(selectionOption) },
                                                                 onClick = {
-                                                                    toDataSelectedOptn = selectionOption
+                                                                    toDataSelectedOptn =
+                                                                        selectionOption
                                                                     isTo = false
                                                                 }
                                                             )
@@ -2840,7 +2862,9 @@ class MainActivity : ComponentActivity() {
                                                 )
                                                 Spacer(modifier = Modifier.width(4.dp))
                                                 if (isSlctSys) {
-                                                    Dialog(onDismissRequest = { isSlctSys = false }) {
+                                                    Dialog(onDismissRequest = {
+                                                        isSlctSys = false
+                                                    }) {
                                                         Card {
                                                             var isInfo by remember {
                                                                 mutableStateOf(
@@ -2875,7 +2899,11 @@ class MainActivity : ComponentActivity() {
                                                                         selected = isdsml,
                                                                         onClick = null // Prevents double-calling onClick
                                                                     )
-                                                                    Spacer(modifier = Modifier.width(8.dp))
+                                                                    Spacer(
+                                                                        modifier = Modifier.width(
+                                                                            8.dp
+                                                                        )
+                                                                    )
                                                                     Text(text = "Decimal")
                                                                 }
                                                                 Spacer(modifier = Modifier.height(5.dp))
@@ -2893,7 +2921,11 @@ class MainActivity : ComponentActivity() {
                                                                         selected = isbynr,
                                                                         onClick = null // Prevents double-calling onClick
                                                                     )
-                                                                    Spacer(modifier = Modifier.width(8.dp))
+                                                                    Spacer(
+                                                                        modifier = Modifier.width(
+                                                                            8.dp
+                                                                        )
+                                                                    )
                                                                     Text(text = "Binary")
                                                                 }
                                                                 Spacer(modifier = Modifier.height(5.dp))
@@ -2905,18 +2937,30 @@ class MainActivity : ComponentActivity() {
                                                                         .fillMaxWidth(),
                                                                     horizontalArrangement = Arrangement.End
                                                                 ) {
-                                                                    Spacer(modifier = Modifier.width(2.dp))
+                                                                    Spacer(
+                                                                        modifier = Modifier.width(
+                                                                            2.dp
+                                                                        )
+                                                                    )
                                                                     TextButton(
                                                                         onClick = {
                                                                             isSlctSys = false
                                                                         }
                                                                     ) { Text("Cancel") }
-                                                                    Spacer(modifier = Modifier.width(6.dp))
+                                                                    Spacer(
+                                                                        modifier = Modifier.width(
+                                                                            6.dp
+                                                                        )
+                                                                    )
                                                                     IconButton(
-                                                                        onClick = { isInfo = !isInfo }
+                                                                        onClick = {
+                                                                            isInfo = !isInfo
+                                                                        }
                                                                     ) {
                                                                         Icon(
-                                                                            painter = painterResource(id = R.drawable.baseline_help_outline_24),
+                                                                            painter = painterResource(
+                                                                                id = R.drawable.baseline_help_outline_24
+                                                                            ),
                                                                             contentDescription = "Help / What ?"
                                                                         )
                                                                     }
@@ -2927,11 +2971,15 @@ class MainActivity : ComponentActivity() {
                                                                     Button(
                                                                         onClick = {
                                                                             if (isbynr) {
-                                                                                isBinarySystem = true
-                                                                                isDecimalSystem = false
+                                                                                isBinarySystem =
+                                                                                    true
+                                                                                isDecimalSystem =
+                                                                                    false
                                                                             } else if (isdsml) {
-                                                                                isBinarySystem = false
-                                                                                isDecimalSystem = true
+                                                                                isBinarySystem =
+                                                                                    false
+                                                                                isDecimalSystem =
+                                                                                    true
                                                                             } else {
                                                                                 //todo : nothing
                                                                             }
@@ -2971,9 +3019,13 @@ class MainActivity : ComponentActivity() {
                                                                                         5.dp
                                                                                     )
                                                                                 )
-                                                                                val intent = remember {
-                                                                                    simple_browser.createIntent(context, "https://github.com/asciiblues/Data-Decimal-System-vs-Binary-/blob/main/README.md")
-                                                                                }
+                                                                                val intent =
+                                                                                    remember {
+                                                                                        simple_browser.createIntent(
+                                                                                            context,
+                                                                                            "https://github.com/asciiblues/Data-Decimal-System-vs-Binary-/blob/main/README.md"
+                                                                                        )
+                                                                                    }
                                                                                 ElevatedButton(
                                                                                     onClick = {
                                                                                         context.startActivity(
@@ -2989,7 +3041,8 @@ class MainActivity : ComponentActivity() {
                                                                                 DropdownMenuItem(
                                                                                     text = { Text("Close") },
                                                                                     onClick = {
-                                                                                        isInfo = false
+                                                                                        isInfo =
+                                                                                            false
                                                                                     }
                                                                                 )
                                                                             }
@@ -3835,7 +3888,11 @@ class MainActivity : ComponentActivity() {
                                             val MONTH = DAY * 30     // Approximate
                                             val YEAR = DAY * 365     // Approximate
 
-                                            var fromTimeSelected by remember { mutableStateOf(timeList[1]) }
+                                            var fromTimeSelected by remember {
+                                                mutableStateOf(
+                                                    timeList[1]
+                                                )
+                                            }
                                             var toTimeSelected by remember { mutableStateOf(timeList[2]) }
                                             var isTo by remember { mutableStateOf(false) }
                                             var isFrom by remember { mutableStateOf(false) }
@@ -3933,7 +3990,8 @@ class MainActivity : ComponentActivity() {
                                                 }
                                             }
                                             Spacer(modifier = Modifier.height(5.dp))
-                                            Text("$fromTimeSelected -> to ->  $toTimeSelected",
+                                            Text(
+                                                "$fromTimeSelected -> to ->  $toTimeSelected",
                                                 fontSize = 12.sp,
                                                 fontWeight = FontWeight.Normal
                                             )
@@ -3952,6 +4010,7 @@ class MainActivity : ComponentActivity() {
                                                         else -> time
                                                     }
                                                 }
+
                                                 "Second" -> {
                                                     result = when (toTimeSelected) {
                                                         "Millisecond" -> time * SECOND
@@ -3964,6 +4023,7 @@ class MainActivity : ComponentActivity() {
                                                         else -> time
                                                     }
                                                 }
+
                                                 "Minute" -> {
                                                     result = when (toTimeSelected) {
                                                         "Millisecond" -> time * MINUTE
@@ -3976,6 +4036,7 @@ class MainActivity : ComponentActivity() {
                                                         else -> time
                                                     }
                                                 }
+
                                                 "Hour" -> {
                                                     result = when (toTimeSelected) {
                                                         "Millisecond" -> time * HOUR
@@ -3988,6 +4049,7 @@ class MainActivity : ComponentActivity() {
                                                         else -> time
                                                     }
                                                 }
+
                                                 "Day" -> {
                                                     result = when (toTimeSelected) {
                                                         "Millisecond" -> time * DAY
@@ -4000,6 +4062,7 @@ class MainActivity : ComponentActivity() {
                                                         else -> time
                                                     }
                                                 }
+
                                                 "Week" -> {
                                                     result = when (toTimeSelected) {
                                                         "Millisecond" -> time * WEEK
@@ -4012,6 +4075,7 @@ class MainActivity : ComponentActivity() {
                                                         else -> time
                                                     }
                                                 }
+
                                                 "Month" -> {
                                                     result = when (toTimeSelected) {
                                                         "Millisecond" -> time * MONTH
@@ -4024,6 +4088,7 @@ class MainActivity : ComponentActivity() {
                                                         else -> time
                                                     }
                                                 }
+
                                                 "Year" -> {
                                                     result = when (toTimeSelected) {
                                                         "Millisecond" -> time * YEAR
@@ -4037,7 +4102,14 @@ class MainActivity : ComponentActivity() {
                                                     }
                                                 }
                                             }
-                                            Box (modifier = Modifier.padding(horizontal = 8.dp).shadow(1.dp, RoundedCornerShape(10.dp)).fillMaxWidth().height(50.dp).background(MaterialTheme.colorScheme.onSecondaryContainer)) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .padding(horizontal = 8.dp)
+                                                    .shadow(1.dp, RoundedCornerShape(10.dp))
+                                                    .fillMaxWidth()
+                                                    .height(50.dp)
+                                                    .background(MaterialTheme.colorScheme.onSecondaryContainer)
+                                            ) {
                                                 Text(
                                                     "Results = $result",
                                                     fontSize = 15.sp,
@@ -4051,8 +4123,9 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
                         }
+                    }
                 }
-            }
+
                 2 -> {
                     var isLocalVibrt by remember { mutableStateOf(true) }
                     LaunchedEffect(Unit) {
@@ -4098,9 +4171,14 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
                             var isthirdlibs by remember { mutableStateOf(false) }
-                            SettingsGroup (title = { Text("About and Info") }) {
-                                Column (modifier = Modifier.padding(horizontal = 8.dp).fillMaxWidth().wrapContentHeight(),
-                                    horizontalAlignment = Alignment.CenterHorizontally) {
+                            SettingsGroup(title = { Text("About and Info") }) {
+                                Column(
+                                    modifier = Modifier
+                                        .padding(horizontal = 8.dp)
+                                        .fillMaxWidth()
+                                        .wrapContentHeight(),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
                                     Text(
                                         "Qualculator",
                                         fontSize = 20.sp,
@@ -4125,27 +4203,44 @@ class MainActivity : ComponentActivity() {
                                 val libs = listOf(
                                     "accompanist-systemuicontroller", "Compose-Settings"
                                 )
-                                val libsLink = listOf (
+                                val libsLink = listOf(
                                     "https://github.com/google/accompanist",
                                     "https://github.com/alorma/Compose-Settings"
                                 )
                                 AnimatedVisibility(visible = isthirdlibs) {
-                                        LazyColumn {
-                                            itemsIndexed(libs) { index, libs ->
-                                                Box (modifier = Modifier.padding(2.dp).shadow(1.dp, RoundedCornerShape(5.dp)).background(
-                                                    MaterialTheme.colorScheme.primaryContainer).fillMaxWidth().wrapContentHeight()) {
-                                                    Text(libs, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.align(
-                                                        Alignment.CenterStart))
-                                                    Button(
-                                                        onClick = {
-                                                            val url = libsLink[index].toString()
-                                                            val i = simple_browser.createIntent(context, url)
-                                                            context.startActivity(i)
-                                                        },
-                                                        modifier = Modifier.align(Alignment.CenterEnd)
-                                                    ) { Text("Open Web") }
-                                                }
+                                    LazyColumn {
+                                        itemsIndexed(libs) { index, libs ->
+                                            Box(
+                                                modifier = Modifier
+                                                    .padding(2.dp)
+                                                    .shadow(1.dp, RoundedCornerShape(5.dp))
+                                                    .background(
+                                                        MaterialTheme.colorScheme.primaryContainer
+                                                    )
+                                                    .fillMaxWidth()
+                                                    .wrapContentHeight()
+                                            ) {
+                                                Text(
+                                                    libs,
+                                                    fontSize = 15.sp,
+                                                    fontWeight = FontWeight.SemiBold,
+                                                    modifier = Modifier.align(
+                                                        Alignment.CenterStart
+                                                    )
+                                                )
+                                                Button(
+                                                    onClick = {
+                                                        val url = libsLink[index].toString()
+                                                        val i = simple_browser.createIntent(
+                                                            context,
+                                                            url
+                                                        )
+                                                        context.startActivity(i)
+                                                    },
+                                                    modifier = Modifier.align(Alignment.CenterEnd)
+                                                ) { Text("Open Web") }
                                             }
+                                        }
                                     }
                                 }
                             }
