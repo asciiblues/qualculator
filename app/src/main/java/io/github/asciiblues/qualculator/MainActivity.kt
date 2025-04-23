@@ -10,14 +10,23 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -361,16 +370,16 @@ class MainActivity : ComponentActivity() {
                             "Simple Interest Calculator" -> {
                                 Card {
                                     val options = listOf("In Year", "In Month")
-                                    var selectedOptionText by remember { mutableStateOf(options[0]) }
+                                    var selectedOptionText by rememberSaveable { mutableStateOf(options[0]) }
                                     val rOptions = listOf("Per Year", "Per Month")
-                                    var rSelectedOptionText by remember { mutableStateOf(rOptions[0]) }
-                                    var pText by remember { mutableStateOf("") }
+                                    var rSelectedOptionText by rememberSaveable { mutableStateOf(rOptions[0]) }
+                                    var pText by rememberSaveable { mutableStateOf("") }
                                     var p = pText.toDoubleOrNull() ?: 0.0
-                                    var rText by remember { mutableStateOf("") }
+                                    var rText by rememberSaveable { mutableStateOf("") }
                                     var r = rText.toDoubleOrNull() ?: 0.0
-                                    var si by remember { mutableDoubleStateOf(0.00) }
-                                    var a by remember { mutableDoubleStateOf(0.00) }
-                                    var tText by remember { mutableStateOf("") }
+                                    var si by rememberSaveable { mutableDoubleStateOf(0.00) }
+                                    var a by rememberSaveable { mutableDoubleStateOf(0.00) }
+                                    var tText by rememberSaveable { mutableStateOf("") }
                                     var t = tText.toDoubleOrNull() ?: 0.0
                                     Column(
                                         modifier = Modifier
@@ -609,17 +618,17 @@ class MainActivity : ComponentActivity() {
                                             .background(MaterialTheme.colorScheme.primaryContainer),
                                         horizontalAlignment = Alignment.CenterHorizontally
                                     ) {
-                                        var iText by remember { mutableStateOf("") }
+                                        var iText by rememberSaveable { mutableStateOf("") }
                                         var i = iText.toDoubleOrNull() ?: 0.0
-                                        var rText by remember { mutableStateOf("") }
+                                        var rText by rememberSaveable { mutableStateOf("") }
                                         var r = rText.toDoubleOrNull() ?: 0.0
-                                        var tText by remember { mutableStateOf("") }
+                                        var tText by rememberSaveable { mutableStateOf("") }
                                         var t = tText.toDoubleOrNull() ?: 0.0
-                                        var p by remember { mutableDoubleStateOf(0.00) }
+                                        var p by rememberSaveable { mutableDoubleStateOf(0.00) }
                                         val options = listOf("In Year", "In Month")
-                                        var selectedOptionText by remember { mutableStateOf(options[0]) }
+                                        var selectedOptionText by rememberSaveable { mutableStateOf(options[0]) }
                                         val rOptions = listOf("Per Year", "Per Month")
-                                        var rSelectedOptionText by remember {
+                                        var rSelectedOptionText by rememberSaveable {
                                             mutableStateOf(
                                                 rOptions[0]
                                             )
@@ -852,15 +861,15 @@ class MainActivity : ComponentActivity() {
                                             .background(MaterialTheme.colorScheme.primaryContainer),
                                         horizontalAlignment = Alignment.CenterHorizontally
                                     ) {
-                                        var iText by remember { mutableStateOf("") }
+                                        var iText by rememberSaveable { mutableStateOf("") }
                                         var i = iText.toDoubleOrNull() ?: 0.0
-                                        var pText by remember { mutableStateOf("") }
+                                        var pText by rememberSaveable { mutableStateOf("") }
                                         var p = pText.toDoubleOrNull() ?: 0.0
-                                        var r by remember { mutableDoubleStateOf(0.0) }
-                                        var tText by remember { mutableStateOf("") }
+                                        var r by rememberSaveable { mutableDoubleStateOf(0.0) }
+                                        var tText by rememberSaveable { mutableStateOf("") }
                                         var t = tText.toDoubleOrNull() ?: 0.0
                                         val options = listOf("In Year", "In Month")
-                                        var selectedOptionText by remember { mutableStateOf(options[0]) }
+                                        var selectedOptionText by rememberSaveable { mutableStateOf(options[0]) }
                                         Spacer(modifier = Modifier.height(5.dp))
                                         Text(
                                             "Get Rate of Interest", fontSize = 20.sp,
@@ -1019,19 +1028,19 @@ class MainActivity : ComponentActivity() {
                                             .background(MaterialTheme.colorScheme.primaryContainer),
                                         horizontalAlignment = Alignment.CenterHorizontally
                                     ) {
-                                        var iText by remember { mutableStateOf("") }
+                                        var iText by rememberSaveable { mutableStateOf("") }
                                         var i = iText.toDoubleOrNull() ?: 0.0
-                                        var pText by remember { mutableStateOf("") }
+                                        var pText by rememberSaveable { mutableStateOf("") }
                                         var p = pText.toDoubleOrNull() ?: 0.0
                                         val rOptions = listOf("Per Year", "Per Month")
-                                        var rSelectedOptionText by remember {
+                                        var rSelectedOptionText by rememberSaveable {
                                             mutableStateOf(
                                                 rOptions[0]
                                             )
                                         }
-                                        var rText by remember { mutableStateOf("") }
+                                        var rText by rememberSaveable { mutableStateOf("") }
                                         var r = rText.toDoubleOrNull() ?: 0.0
-                                        var t by remember { mutableDoubleStateOf(0.0) }
+                                        var t by rememberSaveable { mutableDoubleStateOf(0.0) }
                                         Spacer(modifier = Modifier.height(5.dp))
                                         Text(
                                             text = "Get Time of Interest",
@@ -1195,11 +1204,11 @@ class MainActivity : ComponentActivity() {
                                                 MaterialTheme.colorScheme.primaryContainer
                                             ), horizontalAlignment = Alignment.CenterHorizontally
                                     ) {
-                                        var numItem by remember { mutableIntStateOf(0) }
-                                        var chcknum by remember { mutableStateOf(false) }
-                                        var isOnItems by remember { mutableStateOf(false) }
-                                        var average by remember { mutableDoubleStateOf(0.00) }
-                                        var items by remember { mutableStateOf(mutableListOf<Double>()) }
+                                        var numItem by rememberSaveable { mutableIntStateOf(0) }
+                                        var chcknum by rememberSaveable { mutableStateOf(false) }
+                                        var isOnItems by rememberSaveable { mutableStateOf(false) }
+                                        var average by rememberSaveable { mutableDoubleStateOf(0.00) }
+                                        var items by rememberSaveable { mutableStateOf(mutableListOf<Double>()) }
                                         Spacer(modifier = Modifier.height(5.dp))
                                         Text(
                                             "Get Average",
@@ -1346,9 +1355,9 @@ class MainActivity : ComponentActivity() {
 
                             "Square Area Calculator" -> {
                                 Card {
-                                    var sideText by remember { mutableStateOf("") }
+                                    var sideText by rememberSaveable { mutableStateOf("") }
                                     var side = sideText.toDoubleOrNull() ?: 0.0
-                                    var area by remember { mutableDoubleStateOf(0.0) }
+                                    var area by rememberSaveable { mutableDoubleStateOf(0.0) }
                                     Column(
                                         modifier = Modifier
                                             .padding(5.dp)
@@ -1440,11 +1449,11 @@ class MainActivity : ComponentActivity() {
 
                             "Rectangle Area Calculator" -> {
                                 Card {
-                                    var bText by remember { mutableStateOf("") }
+                                    var bText by rememberSaveable { mutableStateOf("") }
                                     var b = bText.toDoubleOrNull() ?: 0.0
-                                    var lText by remember { mutableStateOf("") }
+                                    var lText by rememberSaveable { mutableStateOf("") }
                                     var l = lText.toDoubleOrNull() ?: 0.0
-                                    var area by remember { mutableDoubleStateOf(0.0) }
+                                    var area by rememberSaveable { mutableDoubleStateOf(0.0) }
                                     Column(
                                         modifier = Modifier
                                             .padding(5.dp)
@@ -1533,9 +1542,9 @@ class MainActivity : ComponentActivity() {
 
                             "Circle Area Calculator" -> {
                                 Card {
-                                    var rText by remember { mutableStateOf("") }
+                                    var rText by rememberSaveable { mutableStateOf("") }
                                     var r = rText.toDoubleOrNull() ?: 0.0
-                                    var area by remember { mutableDoubleStateOf(0.0) }
+                                    var area by rememberSaveable { mutableDoubleStateOf(0.0) }
                                     Column(
                                         modifier = Modifier
                                             .padding(5.dp)
@@ -1615,9 +1624,9 @@ class MainActivity : ComponentActivity() {
 
                             "Cube Volume Calculator" -> {
                                 Card {
-                                    var sideText by remember { mutableStateOf("") }
+                                    var sideText by rememberSaveable { mutableStateOf("") }
                                     var side = sideText.toDoubleOrNull() ?: 0.0
-                                    var volume by remember { mutableDoubleStateOf(0.0) }
+                                    var volume by rememberSaveable { mutableDoubleStateOf(0.0) }
                                     Column(
                                         modifier = Modifier
                                             .padding(5.dp)
@@ -1711,13 +1720,13 @@ class MainActivity : ComponentActivity() {
 
                             "Cuboid Volume Calculator" -> {
                                 Card {
-                                    var lText by remember { mutableStateOf("") }
+                                    var lText by rememberSaveable { mutableStateOf("") }
                                     var l = lText.toDoubleOrNull() ?: 0.0
-                                    var bText by remember { mutableStateOf("") }
+                                    var bText by rememberSaveable { mutableStateOf("") }
                                     var b = bText.toDoubleOrNull() ?: 0.0
-                                    var hText by remember { mutableStateOf("") }
+                                    var hText by rememberSaveable { mutableStateOf("") }
                                     var h = hText.toDoubleOrNull() ?: 0.0
-                                    var volume by remember { mutableDoubleStateOf(0.0) }
+                                    var volume by rememberSaveable { mutableDoubleStateOf(0.0) }
                                     Column(
                                         modifier = Modifier
                                             .padding(5.dp)
@@ -1818,9 +1827,9 @@ class MainActivity : ComponentActivity() {
 
                             "Cylinder Volume Calculator" -> {
                                 Card {
-                                    var hegText by remember { mutableStateOf("") }
-                                    var rdsText by remember { mutableStateOf("") }
-                                    var volume by remember { mutableDoubleStateOf(0.0) }
+                                    var hegText by rememberSaveable { mutableStateOf("") }
+                                    var rdsText by rememberSaveable { mutableStateOf("") }
+                                    var volume by rememberSaveable { mutableDoubleStateOf(0.0) }
 
                                     fun calcVol() {
                                         try {
@@ -1948,11 +1957,13 @@ class MainActivity : ComponentActivity() {
 
                 1 -> {
                     Surface {
+                        var scrollState = rememberScrollState()
                         Column(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(2.dp)
-                                .background(MaterialTheme.colorScheme.background),
+                                .background(MaterialTheme.colorScheme.background)
+                                .verticalScroll(scrollState),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Spacer(modifier = Modifier.height(15.dp))
@@ -1964,8 +1975,8 @@ class MainActivity : ComponentActivity() {
                                 "Time Converter ex . [ Hour -> Minute | Minute -> Hour ]"
                             )
 
-                            var isExpndConvType by remember { mutableStateOf(false) }
-                            var selectedConvOptn by remember { mutableStateOf(convrtType[0]) }
+                            var isExpndConvType by rememberSaveable { mutableStateOf(false) }
+                            var selectedConvOptn by rememberSaveable { mutableStateOf(convrtType[0]) }
 
 
                             Spacer(modifier = Modifier.height(10.dp))
@@ -2011,9 +2022,9 @@ class MainActivity : ComponentActivity() {
                             when (selectedConvOptn) {
                                 "Measuring Unit Converter ex . [ cm -> inch | m -> km ]" -> {
                                     Card {
-                                        var fromUnitText by remember { mutableStateOf("") }
+                                        var fromUnitText by rememberSaveable { mutableStateOf("") }
                                         var fromUnit = fromUnitText.toDoubleOrNull() ?: 0.0
-                                        var toUnitText by remember { mutableStateOf("") }
+                                        var toUnitText by rememberSaveable { mutableStateOf("") }
                                         var toUnit = toUnitText.toDoubleOrNull() ?: 0.0
 
                                         Column(
@@ -2048,8 +2059,8 @@ class MainActivity : ComponentActivity() {
                                             val toList = listOf("mm", "cm", "in", "ft", "m", "km")
                                             var isFrom by remember { mutableStateOf(false) }
                                             var isTo by remember { mutableStateOf(false) }
-                                            var fromListOptn by remember { mutableStateOf(fromList[0]) }
-                                            var toListOptn by remember { mutableStateOf(toList[1]) }
+                                            var fromListOptn by rememberSaveable { mutableStateOf(fromList[0]) }
+                                            var toListOptn by rememberSaveable { mutableStateOf(toList[1]) }
 
                                             Spacer(modifier = Modifier.height(5.dp))
                                             Row(
@@ -2182,6 +2193,14 @@ class MainActivity : ComponentActivity() {
                                                             "Centimetre"
                                                         }
 
+                                                        "in" -> {
+                                                            "Inch"
+                                                        }
+
+                                                        "ft" -> {
+                                                            "Feet"
+                                                        }
+
                                                         "m" -> {
                                                             "Meter"
                                                         }
@@ -2191,7 +2210,7 @@ class MainActivity : ComponentActivity() {
                                                         }
 
                                                         else -> {
-                                                            "????"
+                                                            "???"
                                                         }
                                                     }
                                                 }
@@ -2302,10 +2321,10 @@ class MainActivity : ComponentActivity() {
 
                                 "Temperature Converter ex . [ C -> F | F -> C ]" -> {
                                     Card {
-                                        var tempText by remember { mutableStateOf("") }
+                                        var tempText by rememberSaveable { mutableStateOf("") }
                                         var temp = tempText.toDoubleOrNull() ?: 0.0
-                                        var result by remember { mutableDoubleStateOf(0.0) }
-                                        var oprt by remember { mutableStateOf("") }
+                                        var result by rememberSaveable { mutableDoubleStateOf(0.0) }
+                                        var oprt by rememberSaveable { mutableStateOf("") }
                                         Column(
                                             modifier = Modifier
                                                 .padding(5.dp)
@@ -2337,12 +2356,12 @@ class MainActivity : ComponentActivity() {
                                             var tempList = listOf("°C", "°F", "°R", "°N", "K")
                                             var isFrom by remember { mutableStateOf(false) }
                                             var isTo by remember { mutableStateOf(false) }
-                                            var fromTempSelectedOptn by remember {
+                                            var fromTempSelectedOptn by rememberSaveable {
                                                 mutableStateOf(
                                                     tempList[0]
                                                 )
                                             }
-                                            var toTempSelectedOptn by remember {
+                                            var toTempSelectedOptn by rememberSaveable {
                                                 mutableStateOf(
                                                     tempList[1]
                                                 )
@@ -2643,9 +2662,9 @@ class MainActivity : ComponentActivity() {
 
                                 "Data Converter ex . [ KB -> MB | MB -> KB ]" -> {
                                     Card {
-                                        var dataText by remember { mutableStateOf("") }
+                                        var dataText by rememberSaveable { mutableStateOf("") }
                                         var data = dataText.toDoubleOrNull() ?: 0.0
-                                        var result by remember { mutableDoubleStateOf(0.0) }
+                                        var result by rememberSaveable { mutableDoubleStateOf(0.0) }
                                         Column(
                                             modifier = Modifier
                                                 .padding(5.dp)
@@ -2687,14 +2706,14 @@ class MainActivity : ComponentActivity() {
                                             )
                                             var isFrom by remember { mutableStateOf(false) }
                                             var isTo by remember { mutableStateOf(false) }
-                                            var fromDataSelectedOptn by remember {
+                                            var fromDataSelectedOptn by rememberSaveable {
                                                 mutableStateOf(
                                                     dataList[2]
                                                 )
                                             }
                                             var isBinarySystem by remember { mutableStateOf(true) }
                                             var isDecimalSystem by remember { mutableStateOf(false) }
-                                            var toDataSelectedOptn by remember {
+                                            var toDataSelectedOptn by rememberSaveable {
                                                 mutableStateOf(
                                                     dataList[3]
                                                 )
@@ -2834,9 +2853,9 @@ class MainActivity : ComponentActivity() {
                                                 fontWeight = FontWeight.Normal
                                             )
                                             Spacer(modifier = Modifier.height(5.dp))
-                                            var isSlctSys by remember { mutableStateOf(false) }
-                                            var isbynr by remember { mutableStateOf(false) }
-                                            var isdsml by remember { mutableStateOf(true) }
+                                            var isSlctSys by rememberSaveable { mutableStateOf(false) }
+                                            var isbynr by rememberSaveable { mutableStateOf(false) }
+                                            var isdsml by rememberSaveable { mutableStateOf(true) }
                                             fun getDataSystem(): String {
                                                 return if (isBinarySystem) {
                                                     "Binary"
@@ -3839,9 +3858,9 @@ class MainActivity : ComponentActivity() {
 
                                 "Time Converter ex . [ Hour -> Minute | Minute -> Hour ]" -> {
                                     Card {
-                                        var timetext by remember { mutableStateOf("") }
+                                        var timetext by rememberSaveable { mutableStateOf("") }
                                         var time = timetext.toDoubleOrNull() ?: 0.0
-                                        var result by remember { mutableStateOf(0.0) }
+                                        var result by rememberSaveable { mutableStateOf(0.0) }
                                         Column(
                                             modifier = Modifier
                                                 .padding(5.dp)
@@ -3888,12 +3907,12 @@ class MainActivity : ComponentActivity() {
                                             val MONTH = DAY * 30     // Approximate
                                             val YEAR = DAY * 365     // Approximate
 
-                                            var fromTimeSelected by remember {
+                                            var fromTimeSelected by rememberSaveable {
                                                 mutableStateOf(
                                                     timeList[1]
                                                 )
                                             }
-                                            var toTimeSelected by remember { mutableStateOf(timeList[2]) }
+                                            var toTimeSelected by rememberSaveable { mutableStateOf(timeList[2]) }
                                             var isTo by remember { mutableStateOf(false) }
                                             var isFrom by remember { mutableStateOf(false) }
 
@@ -4121,6 +4140,10 @@ class MainActivity : ComponentActivity() {
                                         }
                                     }
                                 }
+
+                                else -> {
+                                    Text("^ Please Select Converter Type ^", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                                }
                             }
                         }
                     }
@@ -4128,117 +4151,131 @@ class MainActivity : ComponentActivity() {
 
                 2 -> {
                     var isLocalVibrt by remember { mutableStateOf(true) }
+                    var isthirdlibs by remember { mutableStateOf(false) }
+
                     LaunchedEffect(Unit) {
                         val storedValue = readSettingFile(vibrtFileName, context)
                         isLocalVibrt = storedValue == "1"
                         Log.d("DEV LOG", "Initial value read [0] : $storedValue")
                     }
+
+                    val libs = listOf(
+                        "accompanist-systemuicontroller", "Compose-Settings"
+                    )
+                    val libsLink = listOf(
+                        "https://github.com/google/accompanist",
+                        "https://github.com/alorma/Compose-Settings"
+                    )
+
                     Surface {
-                        Column(
+                        LazyColumn(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(2.dp)
                                 .background(MaterialTheme.colorScheme.background),
                             horizontalAlignment = Alignment.CenterHorizontally
-                        )
-                        {
-                            Text(
-                                "Settings",
-                                fontSize = 30.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onBackground
-                            )
-                            Spacer(modifier = Modifier.height(5.dp))
-                            SettingsGroup(title = { Text("Vibrate") }) {
-                                SettingsSwitch(
-                                    state = isLocalVibrt,
-                                    title = { Text("Vibrate") },
-                                    subtitle = { Text("Vibrate on Calculate Button Click") },
-                                    onCheckedChange = { newState: Boolean ->
-                                        isLocalVibrt = newState
-                                        scope.launch {
-                                            writeSettingFile(
-                                                context = context,
-                                                name = vibrtFileName,
-                                                value = if (newState) "1" else "0"
-                                            )
-                                            Log.d("DEV LOG", "Vibrate Value : $newState")
-                                        }
-                                    },
-                                    modifier = Modifier
-                                        .padding(horizontal = 2.dp)
-                                        .fillMaxWidth()
+                        ) {
+                            item {
+                                Text(
+                                    "Settings",
+                                    fontSize = 30.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onBackground,
                                 )
+                                Spacer(modifier = Modifier.height(5.dp))
                             }
-                            var isthirdlibs by remember { mutableStateOf(false) }
-                            SettingsGroup(title = { Text("About and Info") }) {
-                                Column(
-                                    modifier = Modifier
-                                        .padding(horizontal = 8.dp)
-                                        .fillMaxWidth()
-                                        .wrapContentHeight(),
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    Text(
-                                        "Qualculator",
-                                        fontSize = 20.sp,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                    Spacer(modifier = Modifier.height(5.dp))
-                                    Text(
-                                        "Version = 1.0",
-                                        fontSize = 15.sp,
-                                        fontWeight = FontWeight.Normal
-                                    )
-                                    Spacer(modifier = Modifier.height(5.dp))
-
-                                    fun getShowOrHide(): String {
-                                        return if (isthirdlibs) "Hide Third Party Libraries" else "Show Third Party Libraries"
-                                    }
-                                    Button(onClick = { isthirdlibs = !isthirdlibs }) {
-                                        Text(getShowOrHide())
-                                    }
-                                    Spacer(modifier = Modifier.height(5.dp))
-                                }
-                                val libs = listOf(
-                                    "accompanist-systemuicontroller", "Compose-Settings"
-                                )
-                                val libsLink = listOf(
-                                    "https://github.com/google/accompanist",
-                                    "https://github.com/alorma/Compose-Settings"
-                                )
-                                AnimatedVisibility(visible = isthirdlibs) {
-                                    LazyColumn {
-                                        itemsIndexed(libs) { index, libs ->
-                                            Box(
-                                                modifier = Modifier
-                                                    .padding(2.dp)
-                                                    .shadow(1.dp, RoundedCornerShape(5.dp))
-                                                    .background(
-                                                        MaterialTheme.colorScheme.primaryContainer
-                                                    )
-                                                    .fillMaxWidth()
-                                                    .wrapContentHeight()
-                                            ) {
-                                                Text(
-                                                    libs,
-                                                    fontSize = 15.sp,
-                                                    fontWeight = FontWeight.SemiBold,
-                                                    modifier = Modifier.align(
-                                                        Alignment.CenterStart
-                                                    )
+                            item {
+                                SettingsGroup(title = { Text("Vibrate") }) {
+                                    SettingsSwitch(
+                                        state = isLocalVibrt,
+                                        title = { Text("Vibrate") },
+                                        subtitle = { Text("Vibrate on Calculate Button Click") },
+                                        onCheckedChange = { newState: Boolean ->
+                                            isLocalVibrt = newState
+                                            scope.launch {
+                                                writeSettingFile(
+                                                    context = context,
+                                                    name = vibrtFileName,
+                                                    value = if (newState) "1" else "0"
                                                 )
-                                                Button(
-                                                    onClick = {
-                                                        val url = libsLink[index].toString()
-                                                        val i = simple_browser.createIntent(
-                                                            context,
-                                                            url
-                                                        )
-                                                        context.startActivity(i)
-                                                    },
-                                                    modifier = Modifier.align(Alignment.CenterEnd)
-                                                ) { Text("Open Web") }
+                                                Log.d("DEV LOG", "Vibrate Value : $newState")
+                                            }
+                                        },
+                                        modifier = Modifier
+                                            .padding(horizontal = 2.dp)
+                                            .fillMaxWidth()
+                                    )
+                                }
+                            }
+
+                            item {
+                                SettingsGroup(title = { Text("About and Info") }) {
+                                    Column(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 8.dp),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Text(
+                                            "Qualculator",
+                                            fontSize = 20.sp,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        Text(
+                                            "Version = 1.0",
+                                            fontSize = 15.sp,
+                                            fontWeight = FontWeight.Normal
+                                        )
+                                        Spacer(modifier = Modifier.height(5.dp))
+
+                                        Button(onClick = { isthirdlibs = !isthirdlibs }) {
+                                            Text(if (isthirdlibs) "Hide Third Party Libraries" else "Show Third Party Libraries")
+                                        }
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                    }
+                                }
+                            }
+
+                            item {
+                                AnimatedContent(
+                                    targetState = isthirdlibs,
+                                    transitionSpec = {
+                                        fadeIn() togetherWith fadeOut()
+                                    }
+                                ) { isVisible ->
+                                    if (isVisible) {
+                                        Column(modifier = Modifier.animateContentSize()) {
+                                            libs.forEachIndexed { index, lib ->
+                                                Box(
+                                                    modifier = Modifier
+                                                        .padding(2.dp)
+                                                        .shadow(1.dp, RoundedCornerShape(5.dp))
+                                                        .background(MaterialTheme.colorScheme.primaryContainer)
+                                                        .fillMaxWidth()
+                                                        .wrapContentHeight()
+                                                ) {
+                                                    Text(
+                                                        lib,
+                                                        fontSize = 15.sp,
+                                                        fontWeight = FontWeight.SemiBold,
+                                                        modifier = Modifier
+                                                            .align(Alignment.CenterStart)
+                                                            .padding(8.dp)
+                                                    )
+                                                    Button(
+                                                        onClick = {
+                                                            val url = libsLink[index]
+                                                            val i = simple_browser.createIntent(context, url)
+                                                            context.startActivity(i)
+                                                        },
+                                                        modifier = Modifier
+                                                            .align(Alignment.CenterEnd)
+                                                            .padding(8.dp)
+                                                    ) {
+                                                        Text("Open Web")
+                                                    }
+                                                }
                                             }
                                         }
                                     }

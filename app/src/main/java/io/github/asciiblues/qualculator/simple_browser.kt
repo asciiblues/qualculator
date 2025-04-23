@@ -97,6 +97,7 @@ class simple_browser : ComponentActivity() {
                         WebView(it).apply {
                             webViewClient = WebViewClient()
                             settings.javaScriptEnabled = true
+                            settings.builtInZoomControls = true
                             loadUrl(url)
                             webView = this
                         }
