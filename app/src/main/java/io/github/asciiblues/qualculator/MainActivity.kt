@@ -4341,7 +4341,10 @@ class MainActivity : ComponentActivity() {
                                         }) {
                                             Text("Feedback")
                                         }
-                                        Button(onClick = { isthirdlibs = !isthirdlibs }) {
+                                        Button(onClick = { isthirdlibs = !isthirdlibs
+                                        scope.launch {
+                                            scrollState.animateScrollTo(scrollState.maxValue)
+                                        }}) {
                                             Text(if (isthirdlibs) "Hide Third Party Libraries" else "Show Third Party Libraries")
                                         }
                                         Spacer(modifier = Modifier.height(5.dp))
