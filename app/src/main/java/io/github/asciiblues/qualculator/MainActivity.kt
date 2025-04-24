@@ -13,7 +13,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -21,16 +20,11 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -63,7 +57,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedTextField
@@ -76,7 +69,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -4253,17 +4245,26 @@ class MainActivity : ComponentActivity() {
                                 SettingsGroup(title = { Text("About and Info") }) {
                                     var isOpenGithub by rememberSaveable { mutableStateOf(false) }
                                     if (isOpenGithub) {
-                                        Dialog (onDismissRequest = {
+                                        Dialog(onDismissRequest = {
                                             isOpenGithub = false
                                         }) {
                                             Card {
-                                                Column(modifier = Modifier.fillMaxWidth().padding(8.dp).background(MaterialTheme.colorScheme.primaryContainer),
+                                                Column(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .padding(8.dp)
+                                                        .background(MaterialTheme.colorScheme.primaryContainer),
                                                     horizontalAlignment = Alignment.CenterHorizontally,
-                                                    verticalArrangement = Arrangement.Center) {
+                                                    verticalArrangement = Arrangement.Center
+                                                ) {
                                                     Button(
                                                         onClick = {
-                                                            val url = "https://github.com/asciiblues/Qualculator"
-                                                            val i = simple_browser.createIntent(context, url)
+                                                            val url =
+                                                                "https://github.com/asciiblues/Qualculator"
+                                                            val i = simple_browser.createIntent(
+                                                                context,
+                                                                url
+                                                            )
                                                             context.startActivity(i)
                                                         }
                                                     ) {
@@ -4272,8 +4273,12 @@ class MainActivity : ComponentActivity() {
                                                     Spacer(modifier = Modifier.height(5.dp))
                                                     Button(
                                                         onClick = {
-                                                            val url = "https://github.com/asciiblues/Qualculator"
-                                                            val i = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                                                            val url =
+                                                                "https://github.com/asciiblues/Qualculator"
+                                                            val i = Intent(
+                                                                Intent.ACTION_VIEW,
+                                                                Uri.parse(url)
+                                                            )
                                                             context.startActivity(i)
                                                         }
                                                     ) {
@@ -4306,7 +4311,8 @@ class MainActivity : ComponentActivity() {
                                         }
                                         Spacer(modifier = Modifier.height(5.dp))
                                         Button(onClick = {
-                                            val url = "https://github.com/asciiblues/Qualculator/issues"
+                                            val url =
+                                                "https://github.com/asciiblues/Qualculator/issues"
                                             val i = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                                             context.startActivity(i)
                                         }) {
@@ -4314,10 +4320,25 @@ class MainActivity : ComponentActivity() {
                                         }
                                         Spacer(modifier = Modifier.height(5.dp))
                                         Button(onClick = {
-                                            val url = "mailto:nzzz101.3z@gmail.com"
-                                            val i = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                                            context.startActivity(i)
-                                        }){
+                                            try {
+                                                val url = "mailto:nzzz101.3z@gmail.com"
+                                                val i = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                                                context.startActivity(i)
+                                            } catch (e: Exception) {
+                                                scope.launch {
+                                                    snackbarHostState.showSnackbar(
+                                                        "Error :- ${e.message}",
+                                                        withDismissAction = true,
+                                                        duration = SnackbarDuration.Short
+                                                    )
+                                                }
+                                                Log.e("DEV LOG", "Error Massage :- ${e.message}")
+                                                Log.e(
+                                                    "DEV LOG",
+                                                    "Error StackTrace :- ${e.stackTrace}"
+                                                )
+                                            }
+                                        }) {
                                             Text("Feedback")
                                         }
                                         Button(onClick = { isthirdlibs = !isthirdlibs }) {
@@ -4357,7 +4378,10 @@ class MainActivity : ComponentActivity() {
                                                     Button(
                                                         onClick = {
                                                             val url = libsLink[index]
-                                                            val i = simple_browser.createIntent(context, url)
+                                                            val i = simple_browser.createIntent(
+                                                                context,
+                                                                url
+                                                            )
                                                             context.startActivity(i)
                                                         },
                                                         modifier = Modifier
