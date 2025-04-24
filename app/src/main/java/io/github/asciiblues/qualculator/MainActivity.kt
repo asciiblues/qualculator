@@ -1,6 +1,8 @@
 package io.github.asciiblues.qualculator
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
@@ -16,8 +18,10 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.horizontalScroll
@@ -59,6 +63,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedTextField
@@ -71,6 +76,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -94,6 +100,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.core.view.WindowCompat
 import com.alorma.compose.settings.ui.SettingsGroup
 import com.alorma.compose.settings.ui.SettingsSwitch
 import io.github.asciiblues.emicalculator.R
@@ -119,11 +126,12 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
             QualculatorTheme {
                 val scope = rememberCoroutineScope()
                 val currentScreen =
-                    rememberSaveable { mutableIntStateOf(0) } // 0 = Home, 1 = Converter, 2 = Settings, other for claer
+                    rememberSaveable { mutableIntStateOf(0) } // 0 = Home, 1 = Converter, 2 = Settings, other for clear
                 val snackbarHostState = remember { SnackbarHostState() }
                 setStatusBarColor()
                 Scaffold(
@@ -230,7 +238,7 @@ class MainActivity : ComponentActivity() {
         return value
     }
 
-    @OptIn(ExperimentalMaterial3Api::class)
+    @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
     @Composable
     fun mapp(
         modifier: Modifier = Modifier,
@@ -370,9 +378,17 @@ class MainActivity : ComponentActivity() {
                             "Simple Interest Calculator" -> {
                                 Card {
                                     val options = listOf("In Year", "In Month")
-                                    var selectedOptionText by rememberSaveable { mutableStateOf(options[0]) }
+                                    var selectedOptionText by rememberSaveable {
+                                        mutableStateOf(
+                                            options[0]
+                                        )
+                                    }
                                     val rOptions = listOf("Per Year", "Per Month")
-                                    var rSelectedOptionText by rememberSaveable { mutableStateOf(rOptions[0]) }
+                                    var rSelectedOptionText by rememberSaveable {
+                                        mutableStateOf(
+                                            rOptions[0]
+                                        )
+                                    }
                                     var pText by rememberSaveable { mutableStateOf("") }
                                     var p = pText.toDoubleOrNull() ?: 0.0
                                     var rText by rememberSaveable { mutableStateOf("") }
@@ -626,7 +642,11 @@ class MainActivity : ComponentActivity() {
                                         var t = tText.toDoubleOrNull() ?: 0.0
                                         var p by rememberSaveable { mutableDoubleStateOf(0.00) }
                                         val options = listOf("In Year", "In Month")
-                                        var selectedOptionText by rememberSaveable { mutableStateOf(options[0]) }
+                                        var selectedOptionText by rememberSaveable {
+                                            mutableStateOf(
+                                                options[0]
+                                            )
+                                        }
                                         val rOptions = listOf("Per Year", "Per Month")
                                         var rSelectedOptionText by rememberSaveable {
                                             mutableStateOf(
@@ -869,7 +889,11 @@ class MainActivity : ComponentActivity() {
                                         var tText by rememberSaveable { mutableStateOf("") }
                                         var t = tText.toDoubleOrNull() ?: 0.0
                                         val options = listOf("In Year", "In Month")
-                                        var selectedOptionText by rememberSaveable { mutableStateOf(options[0]) }
+                                        var selectedOptionText by rememberSaveable {
+                                            mutableStateOf(
+                                                options[0]
+                                            )
+                                        }
                                         Spacer(modifier = Modifier.height(5.dp))
                                         Text(
                                             "Get Rate of Interest", fontSize = 20.sp,
@@ -2059,8 +2083,16 @@ class MainActivity : ComponentActivity() {
                                             val toList = listOf("mm", "cm", "in", "ft", "m", "km")
                                             var isFrom by remember { mutableStateOf(false) }
                                             var isTo by remember { mutableStateOf(false) }
-                                            var fromListOptn by rememberSaveable { mutableStateOf(fromList[0]) }
-                                            var toListOptn by rememberSaveable { mutableStateOf(toList[1]) }
+                                            var fromListOptn by rememberSaveable {
+                                                mutableStateOf(
+                                                    fromList[0]
+                                                )
+                                            }
+                                            var toListOptn by rememberSaveable {
+                                                mutableStateOf(
+                                                    toList[1]
+                                                )
+                                            }
 
                                             Spacer(modifier = Modifier.height(5.dp))
                                             Row(
@@ -3912,7 +3944,11 @@ class MainActivity : ComponentActivity() {
                                                     timeList[1]
                                                 )
                                             }
-                                            var toTimeSelected by rememberSaveable { mutableStateOf(timeList[2]) }
+                                            var toTimeSelected by rememberSaveable {
+                                                mutableStateOf(
+                                                    timeList[2]
+                                                )
+                                            }
                                             var isTo by remember { mutableStateOf(false) }
                                             var isFrom by remember { mutableStateOf(false) }
 
@@ -4142,7 +4178,11 @@ class MainActivity : ComponentActivity() {
                                 }
 
                                 else -> {
-                                    Text("^ Please Select Converter Type ^", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                                    Text(
+                                        "^ Please Select Converter Type ^",
+                                        fontSize = 20.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
                                 }
                             }
                         }
@@ -4153,12 +4193,6 @@ class MainActivity : ComponentActivity() {
                     var isLocalVibrt by remember { mutableStateOf(true) }
                     var isthirdlibs by remember { mutableStateOf(false) }
 
-                    LaunchedEffect(Unit) {
-                        val storedValue = readSettingFile(vibrtFileName, context)
-                        isLocalVibrt = storedValue == "1"
-                        Log.d("DEV LOG", "Initial value read [0] : $storedValue")
-                    }
-
                     val libs = listOf(
                         "accompanist-systemuicontroller", "Compose-Settings"
                     )
@@ -4166,6 +4200,12 @@ class MainActivity : ComponentActivity() {
                         "https://github.com/google/accompanist",
                         "https://github.com/alorma/Compose-Settings"
                     )
+
+                    LaunchedEffect(Unit) {
+                        val storedValue = readSettingFile(vibrtFileName, context)
+                        isLocalVibrt = storedValue == "1"
+                        Log.d("DEV LOG", "Initial value read [0] : $storedValue")
+                    }
 
                     Surface {
                         LazyColumn(
@@ -4180,10 +4220,11 @@ class MainActivity : ComponentActivity() {
                                     "Settings",
                                     fontSize = 30.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.onBackground,
+                                    color = MaterialTheme.colorScheme.onBackground
                                 )
                                 Spacer(modifier = Modifier.height(5.dp))
                             }
+
                             item {
                                 SettingsGroup(title = { Text("Vibrate") }) {
                                     SettingsSwitch(
@@ -4210,6 +4251,38 @@ class MainActivity : ComponentActivity() {
 
                             item {
                                 SettingsGroup(title = { Text("About and Info") }) {
+                                    var isOpenGithub by rememberSaveable { mutableStateOf(false) }
+                                    if (isOpenGithub) {
+                                        Dialog (onDismissRequest = {
+                                            isOpenGithub = false
+                                        }) {
+                                            Card {
+                                                Column(modifier = Modifier.fillMaxWidth().padding(8.dp).background(MaterialTheme.colorScheme.primaryContainer),
+                                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                                    verticalArrangement = Arrangement.Center) {
+                                                    Button(
+                                                        onClick = {
+                                                            val url = "https://github.com/asciiblues/Qualculator"
+                                                            val i = simple_browser.createIntent(context, url)
+                                                            context.startActivity(i)
+                                                        }
+                                                    ) {
+                                                        Text("Build-In Browser")
+                                                    }
+                                                    Spacer(modifier = Modifier.height(5.dp))
+                                                    Button(
+                                                        onClick = {
+                                                            val url = "https://github.com/asciiblues/Qualculator"
+                                                            val i = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                                                            context.startActivity(i)
+                                                        }
+                                                    ) {
+                                                        Text("Chrome / Default Browser")
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
                                     Column(
                                         modifier = Modifier
                                             .fillMaxWidth()
@@ -4228,7 +4301,25 @@ class MainActivity : ComponentActivity() {
                                             fontWeight = FontWeight.Normal
                                         )
                                         Spacer(modifier = Modifier.height(5.dp))
-
+                                        Button(onClick = { isOpenGithub = true }) {
+                                            Text("Github")
+                                        }
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        Button(onClick = {
+                                            val url = "https://github.com/asciiblues/Qualculator/issues"
+                                            val i = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                                            context.startActivity(i)
+                                        }) {
+                                            Text("Report Bug / Issue")
+                                        }
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        Button(onClick = {
+                                            val url = "mailto:nzzz101.3z@gmail.com"
+                                            val i = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                                            context.startActivity(i)
+                                        }){
+                                            Text("Feedback")
+                                        }
                                         Button(onClick = { isthirdlibs = !isthirdlibs }) {
                                             Text(if (isthirdlibs) "Hide Third Party Libraries" else "Show Third Party Libraries")
                                         }
