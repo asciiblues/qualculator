@@ -1,0 +1,12 @@
+Qualculator - Copyright (c) 2025 Muhammad Ziyan 
+Licensed under the Apache License, Version 2.0
+
+This project includes third-party libraries:
+
+1. Accompanist-systemuicontroller (Apache License 2.0)
+   https://github.com/google/accompanist
+   Licensed under the Apache License, Version 2.0
+
+2. Compose-Settings (MIT License)
+   https://github.com/alorma/Compose-Settings
+   Licensed under the MIT License
