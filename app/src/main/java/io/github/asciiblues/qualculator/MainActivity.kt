@@ -325,7 +325,7 @@ class MainActivity : ComponentActivity() {
                         )
 
                         var isCalcTypeExpanded by remember { mutableStateOf(false) }
-                        var selectedCalcType by remember { mutableStateOf(calcType[0]) }
+                        var selectedCalcType by rememberSaveable { mutableStateOf(calcType[0]) }
 
                         Spacer(modifier = Modifier.height(15.dp))
 
